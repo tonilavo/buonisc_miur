@@ -1,0 +1,32 @@
+
+
+    <!DOCTYPE html>
+
+
+    <body>
+    <div class="container">
+
+				<h5>Riepilogo della sua richiesta di inserimento in graduatoria per l'assegnazione di buona scuola,
+				 compilata in data&ensp;{{ form.pr_data_richiesta.value|date:"d/m/Y"}} </h5>
+				 
+				 <h6>Richiedente</h6>
+                <table>
+                    <tr>
+                        <td>Cognome </td><td>{{ form.so_cognome.value}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nome </td><td>{{ form.so_nome.value}}</td>
+                    </tr>
+                    <tr>
+                        <td>Cod.fiscale </td><td>{{ form.so_cod_fis.value}}</td>
+                    </tr>
+
+					<tr>
+                        <td>Email </td><td>{{ form.so_email.value}}</td>
+                    </tr>
+                </table>
+				<h5>Dati dello studente</h5>
+				<h5>Scuola dell'infanzia frequentata dal minore</h5>
+            </div>
+        </body>
+        </html>

@@ -1,0 +1,192 @@
+{% extends "baseBootstrap4.html" %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="it">
+
+{% block content %}
+
+		<div class="row">
+			<div class="col-md-12" style="padding-left:85px;padding-top:10px;">
+				<h4>Riepilogo della sua richiesta di assegnazione buoni scuola num. {{ data.id }}&ensp; </h4>
+		<div class="row">
+		{% if messages %}
+			<ul class="messages">
+			{% for message in messages %}
+				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+					<div class="alert alert-danger" role="alert">{{ message }}</div>
+				</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+		</div>
+				 <div style="padding-bottom: 20px;">----------------------------------------------------------------------------------------------------------------------------------------------------</div>
+				 <h5>Richiedente</h5>
+				 
+				 <form  novalidate method="post" action=".">					
+				 <div class="row" style="padding-bottom: 20px;">
+					 <div class="col-sm-2" >
+						 <label for="cf_richiedente" class="col-sm-2 col-form-label">Codice fiscale</label>
+						   <input type="text" readonly class="form-control-plaintext" id="id_so_cod" value="{{ data.so_cod_fis}}">
+					 </div>
+					 <div class="col-sm-2" >
+						<label for="email" class="col-sm-2 col-form-label">Email</label>
+						  <input type="text" readonly class="form-control-plaintext" id="id_so_email" value="{{ data.so_email}}">
+					</div>
+					 <div class="col-sm-2">
+						 <label for="isee" class="col-sm-0 col-form-label">Isee</label>
+						   <input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_isee }}">
+					 </div>
+				 </div>			 
+				 <div class="row" style="padding-bottom: 20px;" >
+					 <div class="col-sm-2" >
+						 <label for="id_so_cog" class="col-sm-2 col-form-label">Cognome</label>
+						   <input type="text" readonly class="form-control-plaintext" id="id_so_cog" value="{{ data.so_cognome}}">
+					 </div>
+					 <div class="col-sm-2" >
+						 <label for="id_so_nome" class="col-sm-2 col-form-label">Nome</label>
+						   <input type="text" readonly class="form-control-plaintext" id="id_so_nome" value="{{ data.so_nome}}">
+					 </div>
+					 <div class="col-sm-0" >
+						<label for="id_so_sesso" class="col-sm-2 col-form-label">Sesso</label>
+						  <input type="text" readonly class="form-control-plaintext" id="id_so_sesso" value="{{ data.so_sesso}}">
+					</div>
+				 </div>			 
+				 <div class="row" style="padding-bottom:20px;" >
+					 <div class="col-sm-2" >
+						 <label for="id_so_nasc_dt" class="col-sm-0 col-form-label">Data di nascita</label>
+						   <input type="text" readonly class="form-control-plaintext" id="id_so_nasc_dt" value="{{ data.so_nasc_dt |date:"d/m/Y"}}">
+					 </div>
+					 <div class="col-sm-2" >
+						 <label for="id_so_nasc_com" class="col-sm-0 col-form-label">Comune di nascita</label>
+						   <input type="text"  readonly class="form-control-plaintext" id="id_so_nasc_com" value="{{ data.so_nasc_com}}">
+					 </div>
+					<div class="col-sm-2" >
+					{% if  data.so_flag_residente  == 1 %}
+					<label for="id_so_flag_residente" class="col-sm-0 col-form-label">Residenza</label>
+				 	<input type="text" readonly class="form-control-plaintext" id="id_so_flag_residente" value="Comune di Grosseto">
+					{% else   %}
+					<label for="id_so_domicilio" class="col-sm-0 col-form-label">Domicilio</label>
+				 	<input type="text" readonly class="form-control-plaintext" id="id_so_domicilio" value="{{ data.so_domicilio}}">
+					{%  endif   %}
+				</div>
+				 </div>	
+
+				<h5>Dati anagrafici del minore</h5>
+				<div class="row" style="padding-bottom: 20px;">
+					<div class="col-md-2" >
+						<label for="cognome" class="col-md-2 col-form-label">Cognome</label>
+					  	<input type="text" readonly class="form-control-plaintext" id="id_prcognome" value="{{ data.pr_cognome }}">
+					</div>
+					<div class="col-sm-2">
+						<label for="nome" class="col-md-2 col-form-label">Nome</label>
+					  	<input type="text" readonly class="form-control-plaintext" id="id_nome" value="{{ data.pr_nome }}">
+					</div>
+					<div class="col-sm-0" >
+						<label for="pr_codfiscale" class="col-md-2 col-form-label">Cod.fiscale</label>
+						  <input type="text" readonly class="form-control-plaintext" id="id_cf" value="{{ data.pr_codfiscale }}">
+					</div>
+				</div>
+				<div class="row" style="padding-bottom: 20px;" >			
+						<div class="col-sm-2">
+							<label for="pr_nasc_dt" class="col-md-2 col-form-label">Data di nascita</label>
+							  <input type="text" readonly class="form-control-plaintext" id="id_pr_nas_dt" value="{{ data.pr_nasc_dt |date:"d/m/Y"}}">
+						</div>
+						<div class="col-sm-2">
+							<label for="pr_nasc_com" class="col-md-2 col-form-label">Comune di nascita</label>
+							  <input type="text" readonly class="form-control-plaintext" id="id_pr_nasc_com" value="{{ data.pr_nasc_com }}">
+						</div>
+						<div class="col-sm-0" >
+							<label for="pr_sesso" class="col-sm-0 col-form-label">Sesso</label>
+							  <input type="text" readonly class="form-control-plaintext" id="id_pr_sesso" value="{{ data.pr_sesso }}">
+						</div>	
+				</div>
+				<h5>Scuola dell'infanzia frequentata dal minore</h5>
+
+				<div class="row" style="padding-bottom: 30px;">
+							<div class="col-sm-6">
+								<label for="id_pr_asilo" class="col-sm-6 col-form-label">Denominazione</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_asilo" value="{{ asilo }}">
+							</div>							
+									
+				</div>
+				<div class="row" style="padding-bottom: 30px;">
+							<div class="col-sm-2">
+								<label for="id_pr_mesi_frequenza" class="col-sm-6 col-form-label">Mesi di frequenza</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_mesi_frequenza }}">
+							</div>							
+							<div class="col-sm-2">
+								<label for="id_pr_retta_mese" class="col-sm-6 col-form-label">Retta mensile</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_retta_mese }}">
+							</div>										
+				</div>		
+				
+
+				{% if  data.pr_tipo_asilo  == 'P' %}
+				
+					<div class="row" style="padding-bottom: 30px;">
+							<div class="col-sm-2">
+								<label for="id_pr_num_tot_ricevute" class="col-sm-6 col-form-label">Num.ricevute allegate</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_num_tot_ricevute }}">
+							</div>							
+							<div class="col-sm-2">
+								<label for="id_pr_importo_tot_ricevute" class="col-sm-6 col-form-label">Importo totale delle ricevute</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_importo_tot_ricevute" value="{{ data.pr_importo_tot_ricevute }}">
+							</div>										
+					</div>					
+		
+				{% endif %}
+
+				<div class="row" style="padding-bottom: 20px;">
+					<div class="col-sm-2">
+					<label for="id_pr_risc" class="col-md-2 col-form-label">Riscossione</label>
+						  <input type="text" readonly class="form-control-plaintext" id="id_pr_risc" 
+						  value="{% if  data.so_risc_diretta  == 'S'%}per cassa{% else %}per banca{% endif %}">
+					</div>			
+
+					{% if  data.so_risc_diretta  == 'N' %}
+					<div class="col-md-6">
+						<label for="so_banca_iban" class="col-md-2 col-form-label">IBAN</label>
+						<input type="text" readonly class="form-control-plaintext" id="id_so_banca_iban" value="{{ data.so_banca_iban  }}">
+					
+					</div>	
+					{%  endif %}
+				</div>
+				{% if photos %}
+						<div class="col-sm-6" style="padding-top:30px;">
+							<h5>Allegati caricati</h5>
+ 
+								<table class="table table-bordered" >
+								<thead>
+								<tr>
+									{% for elem in photos %}
+									<th style="text-align:center;">{{ elem.descrizione}}</th>
+									{% endfor %}
+								</tr>
+								</thead>
+								<tbody>
+								<tr>
+								{% for elem in photos %}
+									<td><a href="{{elem.file.url}}" target='_blank'>{{elem.file.name}}</a></td>
+									{% endfor %}
+								</tr>
+								</tbody>
+								</table>
+						
+						</div>
+  {% endif %}
+
+				{% csrf_token %}
+				<!--h5>stato: da confermare</h5-->
+				<div class="row col-md-6"  style="padding-top: 30px;">
+					<div class="col-md-4" >
+						<button type="submit" name="edit" class="btn btn-primary">Modifica la domanda</button>
+					</div>
+					<div class="col-md-4">
+						<button type="submit" name="exit_form" class="btn btn-primary">Ritorna alla lista</button>
+					</div>
+
+				</div>
+
+			</form>
+		</div>
+  {% endblock  %}

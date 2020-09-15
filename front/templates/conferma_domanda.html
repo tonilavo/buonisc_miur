@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="it">
+
+    <h3>Richiesta di inserimento in graduatoria per l'erogazione di buoni scuola per scuole d'infanzia num.2020/{{ id }}</h3>
+    <p></p>
+
+    <h3>Dati del richiedente</h3>
+    <p>Nominativo:&ensp;{{ form.so_cognome.value}}&nbsp;{{ form.so_nome.value}}</p>
+    <p>Data nascita:&ensp;{{ form.so_nasc_dt.value|date:"d/m/Y"}}</p>
+    <p>Luogo di nascita:&ensp;{{ form.so_nasc_com.value}}</p>
+    <p>Email:&ensp;{{ form.so_email.value}}</p>
+    {% if  form.so_tel.value  %}
+        <p>Telefono:{{ form.so_tel.value}}</p>
+    {% endif %}
+    {% if  form.so_flag_residente.value == 0 %}
+        <p>Non residente nel Comune di Grosseto&ensp;Domicilio:{{ form.so_domicilio.value}}</p>
+    {% else %}
+        <p>Residente nel Comune di Grosseto</p>
+    {% endif %}
+    <p>Cod.fiscale:&ensp;{{ form.so_cod_fis.value}}</p>
+    <h3>Dati DSU</h3>
+    <p>Isee:&ensp;{{ form.pr_isee.value}}</p>
+    <p>Num.prot.DSU:&ensp;INPS-ISEE-2020-{{ form.pr_prot_isee_inps.value}}-00</p>
+    <p>Data DSU: {{ form.pr_data_isee_inps.value|date:"d/m/Y"}}</p>
+    <h3>Dati anagrafici del minore</h3>
+    <p>Nominativo:&ensp;{{ form.pr_cognome.value}}&nbsp;{{ form.pr_nome.value}}</p>
+    <p>Cod.fiscale:&ensp;{{ form.pr_codfiscale.value}}</p>
+    <p>Data nascita:&ensp;{{ form.pr_nasc_dt.value|date:"d/m/Y"}}</p>
+    <p>Luogo di nascita:&ensp;{{ form.pr_nasc_com.value}}</p>
+    <h3>Scuola dell'infanzia frequentata dal minore</h3>
+    <p>{{ asilo }}</p>
+    <p>Mesi di frequenza:&ensp;{{ form.pr_mesi_frequenza.value}}</p>
+    <p>Retta mensile:&ensp;{{ form.pr_retta_mese.value}}</p>
+    {% if  form.pr_num_tot_ricevute.value %}
+        <p>Numero ricevute presentate:&ensp;{{ form.pr_num_tot_ricevute.value}}</p>
+        <p>Importo totale delle ricevute:&ensp;{{ form.pr_importo_tot_ricevute.value}}</p>
+    {% endif %}  
+    <p>Riscossione&ensp;{% if  form.so_risc_diretta.value == 'S'%}per cassa{% else %}per banca&ensp;IBAN:{{ form.so_banca_iban.value}}{% endif %}</p>
+</html>

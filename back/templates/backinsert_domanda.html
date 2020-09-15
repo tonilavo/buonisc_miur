@@ -1,0 +1,27 @@
+{% extends "baseBootstrap4.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+
+{% block content %}
+	{% block extra_js %}
+	<!--script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script-->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+	<script src="{% static 'js/backdomande_scripts.js' %}"></script>
+		{% endblock extra_js %}
+
+
+		<div class="row">
+			<a href="/back/domandelist" style="padding-left:275px;padding-top:10px;">Torna alla lista</a>
+	</div>
+		<div class="row">
+		 <div class="col-md-8" style="padding-left:65px;padding-top:10px;">
+
+
+        	{% crispy form %}
+
+	    	 </div>
+
+  {% endblock  %}

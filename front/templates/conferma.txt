@@ -1,0 +1,8 @@
+    
+    
+    Abbiamo registrato la sua Richiesta di inserimento in graduatoria per l'erogazione di buoni scuola per scuole d'infanzia con numero pratica: 2020/{{ id }})
+	
+	Gli aventi diritto riceveranno successivamente comunicazione dell'erogazione del buono.
+
+    Cordiali saluti,
+        Comune di Grosseto - Servizi educativi

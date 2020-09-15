@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% block extra_js %}
+
+    <script>
+        $(document).ready(
+            function () {                        
+               var table = $('#TblFiles').DataTable(
+                {     
+                  "serverSide": true,
+                  "ajax": "/back/api/allegati/?format=datatables",
+                  "paging":true,
+                  "pageLength": 50,
+                  "columns": [
+                          {data: "id"},
+                          {data: "domanda_num"},
+                          {data: "descrizione"},
+                          {data: "file"},
+                          {data: "link_file", sortable: false, searchable:false},      
+                    ],
+                    "language": 
+                        {
+                        "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Italian.json"
+                        }
+            }
+            );	
+            //imposta il reloading ogni 2 min
+            setInterval( function () {
+                          table.ajax.reload();
+            }, 120000 );	
+	      });
+
+//$.fn.dataTable.ext.errMode = 'throw';
+    </script>	
+   
+
+{% endblock extra_js %} 
+<!--div class="row" style="padding-left: 400px;"><a href="/servizio" class="btn btn-lg btn-primary " role="button" aria-disabled="true">Menu di servizio</a></div-->
+<div class="row" style="padding-left: 400px;"><h4>Domande Web</h4></div>
+<div class="row">
+
+    <div class="col-sm-12">
+        <table id="TblFiles" class="table table-striped table-bordered" style="width:50%;%">
+            <thead>
+                <tr>
+                  <th style="text-align: center">Id</th>
+                  <th style="text-align: center">num.domanda</th>
+                  <th style="text-align: center">descrizione</th>
+                  th style="text-align: center">File</th>
+                  <th style="text-align: center">Preview</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}
