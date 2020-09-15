@@ -1,3 +1,1096 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.shortcuts import render, redirect
+from django.views import View
+from django.conf import settings
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, JsonResponse
+from .tasks import *
+from .forms import *
+from .domande_forms import *
+from .models import *
+from rest_framework import viewsets
+from django.utils import timezone
+from back.serializers_json import *
+from django.contrib import messages
+from django.contrib.messages import get_messages
+from codicefiscale import codicefiscale
+import random
+import datetime
+
+def get_url_prefix():
+	if settings.USE_ABSOLUTE_PATH == 'True':
+		if settings.HOSTNAME[0:7] != "http://":
+			hostname = "http://" + settings.HOSTNAME
+		else:
+			hostname = settings.HOSTNAME
+
+		return hostname
+	else:
+		return '/front'
+
+
+def sito_fermo(request):
+	return render(request, 'blackout.html')
+
+
+def preform_insert(request):
+	dt_scadenza = datetime.datetime.strptime(settings.DATA_SCADENZA, "%d/%m/%Y").date()
+
+	if timezone.now().date() > dt_scadenza:
+		context = {'scadenza': settings.DATA_SCADENZA}
+		return render(request, 'preform_fine.html', context)
+
+	if request.method == 'GET':
+		form = CrispyPreForm(initial={'protocollo_inps': 'INPS-ISEE-2020-XXXXXXXXX-00', 'isee': 0.0})
+	else:
+		form = CrispyPreForm(request.POST)
+		if form.is_valid():
+			preform = form.save(commit=False)
+			preform.data_ingresso = timezone.now()
+			preform.save()
+			# visualizza messaggio di conferma all'utente
+			return render(request, 'response.html')
+
+	context = {'form': form}
+	return render(request, 'preform.html', context)
+
+
+def domandatest2(request):
+	cf_test = 'BRGLWG73S24I726A'
+
+	test_token = randomString(11)
+	rec_prec = Ingressi.objects.filter(codice_fiscale=cf_test, token=test_token)
+	if rec_prec.count() == 0:
+		rec_prec = Ingressi.objects.create(codfis_bimbo='BRGRLA16S69E202I', data_ingresso=datetime.datetime.now(),
+										   email="tonino.lavorati@gmail.com", isee='23573.04', codice_fiscale=cf_test,
+										   data_dsu=datetime.datetime(2020, 2, 6),
+										   protocollo_inps='INPS-ISEE-2020-02368418C-00', token=test_token, stato=0)
+		rec_prec.save()
+
+	testdomande_rec = Domande.objects.filter(pr_codfiscale='BRGRLA16S69E202I')
+
+	if testdomande_rec.count() == 0:
+		domanda_data = {}
+		domanda_data['token'] = test_token
+		domanda_data['so_cognome'] = 'BARGAGLI'
+		domanda_data['so_nome'] = 'LUDWIG'
+		domanda_data['so_nasc_dt'] = datetime.datetime(1973, 11, 24)
+		domanda_data['so_nasc_com'] = 'SIENA'
+		domanda_data['so_email'] = "tonino.lavorati@gmail.com"
+		domanda_data['so_flag_residente'] = 1
+		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
+		domanda_data['so_sesso'] = 'M'
+		domanda_data['pr_cognome'] = 'BARGAGLI'
+		domanda_data['pr_nome'] = 'ARIEL'
+		domanda_data['pr_sesso'] = 'F'
+		domanda_data['pr_nasc_dt'] = datetime.datetime(2016, 11, 29)
+		domanda_data['pr_nasc_com'] = 'GROSSETO'
+		domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
+		domanda_data['pr_tipo_asilo'] = 'P'
+		domanda_data['pr_asilo'] = Asili.objects.get(pk=11)
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['pr_retta_mese'] = 280
+		domanda_data['pr_mesi_frequenza'] = 5
+		domanda_data['pr_num_tot_ricevute'] = 5
+		domanda_data['pr_importo_tot_ricevute'] = 1400
+		rec = Domande.objects.create(**domanda_data)
+		print("creata domanda num." + str(rec.pk))
+		domanda_num = rec.pk
+	else:
+		domanda_num = testdomande_rec[0].pk
+
+	return redirect(get_url_prefix() + '/review_domanda/' + str(domanda_num))
+
+# ********************************************************************************************************
+#               INSERT_DOMANDA
+# ********************************************************************************************************
+def insert_domanda(request):
+	domandaform = None
+	if request.method == 'GET':
+		if 'token' not in request.GET:
+			msg = 'Utente non autorizzato. Impossibile continuare'
+			context = {'errmessage': msg}
+			return render(request, "errormessages.html", context)
+
+		mytoken = request.GET['token']
+		if settings.DEBUG:
+			print("token: " + mytoken)
+		request.session['token'] = mytoken
+		request.session['domanda_id'] = None
+		# ricerca la domanda collegata al token
+		rec_domanda = Domande.objects.filter(token=mytoken)
+		nDomande = rec_domanda.count()
+
+		if nDomande == 1:  # se il record con quel token già esiste si va in update
+			rec = rec_domanda[0]
+			if settings.DEBUG:
+				print("domanda trovata. Id:" + str(id) + " stato:"+  str(rec.pr_stato))
+				print("token in  sessione:"+ request.session['token'])
+			# dallo stato della domanda decido se cosa può fare l'utente
+			if rec.pr_stato <= 1 :
+				request.session['domanda_id'] = rec.id
+				next_url = get_url_prefix() + '/review_domanda/' + str(rec.id) + '/'
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+				return HttpResponseRedirect(next_url)
+			elif (rec.pr_stato == 2):  # domanda confermata dall'ufficio
+				msg = 'La  domanda con id.' + str(rec.id) + ' è già stata verificata e archiviata.'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+			elif (rec.pr_stato > 4):  # domanda annullata dall'ufficio
+				msg = 'La  domanda con id.' + str(rec.id) + ' è già stata controllata e annullata per dati non corretti.'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+
+		elif nDomande == 0:  # la prima volta che l'utente accede con quel token va creato un record per la domanda
+			# dal token passato in Get si risale all'ingresso corrispondente e si recuperano i dati precompilati
+			ingressi = Ingressi.objects.filter(token=mytoken)
+
+			if ingressi.count() == 1:  # trovato l'ingresso corrispondente
+				rec = ingressi[0]
+				cod_fiscale = rec.codice_fiscale
+				cf = codicefiscale.decode(cod_fiscale)
+				luogo_nascita_ric=cf['birthplace']['name']
+				dtnascita_ric =  cf ['birthdate']
+				sex_ric = cf['sex']
+				cod_fiscale = rec.codfis_bimbo
+				cf = codicefiscale.decode(cod_fiscale)
+				luogo_nascita_minore = cf['birthplace']['name']
+				dtnascita_minore =  cf ['birthdate']
+				sex_minore = cf['sex']
+
+				form = CrispyDomandaForm(
+						initial={'token': mytoken, 'pr_data_richiesta': timezone.now().date, 'pr_isee': rec.isee,
+							 'pr_data_isee_inps': rec.data_dsu,
+							 'pr_prot_isee_inps': rec.protocollo_inps[15:24], 'so_cod_fis': rec.codice_fiscale,
+							 'so_nasc_dt': dtnascita_ric, 'so_nasc_com': luogo_nascita_ric, 'so_sesso': sex_ric,
+							 'so_tel': rec.tel, 'so_email': rec.email, 'so_risc_diretta': 'S',
+							 'pr_codfiscale': rec.codfis_bimbo, 'pr_sesso': sex_minore,
+							 'pr_nasc_dt': dtnascita_minore, 'pr_nasc_com': luogo_nascita_minore,
+							 'pr_tipo_asilo': 'C', 'pr_asilo': Asili.objects.get(pk=1)})
+
+			else:  # token sconosciuto
+				msg = 'Utente non autorizzato. Impossibile continuare'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+	else:
+		# Post dopo premuto Salva
+		form = CrispyDomandaForm(request.POST)
+		form_ok = form.is_valid()
+		if form_ok:
+			domandaform = form.save(commit=False)
+
+			# si aggiorna il record con i dati dai campi non Db
+			# si leggono i valori da campi non db per tipo e asilo  e si scrivono nei campi db
+			# si trova il record  di Asili da legare in FK
+			asilo_cod = form.cleaned_data['selasilo']
+			asilorec = Asili.objects.get(pk=asilo_cod)
+			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
+			domandaform.pr_asilo = asilorec
+			#	si toglie l'iban farlocco messo all'inizio per passare il clean
+			if domandaform.so_risc_diretta == 'S':
+				domandaform.so_banca_iban = ''
+			domandaform.save()
+			# ripresento in lettura i dati  all'utente
+			next_url = get_url_prefix() + '/review_domanda/' + str(domandaform.pk) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+	context = {'form': form}
+	return render(request, 'insert_domanda.html', context)
+
+# ********************************************************************************************************
+#               UPDATE_DOMANDA
+# ********************************************************************************************************
+def update_domanda(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	try:
+		rec = Domande.objects.get(pk=id)
+
+	except:
+		msg = 'Domanda con Id.'+str(id) + 'inesistente'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if request.method == 'GET':
+		asilorec = rec.pr_asilo
+		campi_nodb = {'seltipoasilo': rec.pr_tipo_asilo, 'selasilo': asilorec.pk}
+		form = CrispyDomandaForm(instance=rec, initial=campi_nodb)
+		if settings.DEBUG:
+			print("form in GET")
+			print(form)
+	else:
+		# Post dopo premuto Salva
+		form = CrispyDomandaForm(request.POST, instance=rec)
+		if settings.DEBUG:
+			print(form)
+		form_ok = form.is_valid()
+		if form_ok:
+			domandaform = form.save(commit=False)
+
+			# si aggiorna il record con i dati dai campi non Db
+			# si leggono i valori da campi non db per tipo e asilo  e si scrivono nei campi db
+			# si trova il record  di Asili da legare in FK
+			asilo_cod = form.cleaned_data['selasilo']
+			asilorec = Asili.objects.get(pk=asilo_cod)
+			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
+			domandaform.pr_asilo = asilorec
+			#	si toglie l'iban farlocco messo all'inizio per passare il clean
+			if domandaform.so_risc_diretta == 'S':
+				domandaform.so_banca_iban = ''
+			domandaform.save()
+			# ripresento in lettura i dati  all'utente
+			next_url = get_url_prefix() + '/review_domanda/' + str(domandaform.pk) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		else:
+			if settings.DEBUG:
+				print(form.errors.as_data())
+			context = {'form': form}
+			return render(request, 'insert_domanda.html', context)
+
+		# rifacciamo vedere i dati in sola lettura all'utente
+		request.session['token'] = mytoken
+		next_url = get_url_prefix() + '/review_domanda/' + str(id) + '/'
+		if settings.DEBUG:
+			print("da update_domanda redirect to " + next_url)
+
+		return HttpResponseRedirect(next_url)
+
+	context = {'form': form}
+	return render(request, 'insert_domanda.html', context)
+
+# ********************************************************************************************************
+#               REVIEW_DOMANDA
+# ********************************************************************************************************
+def review_domanda(request, id):
+	if 'token'  in request.session:
+		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if settings.DEBUG:
+		print("domanda review. Id:" + str(id))
+		print("token in  sessione:"+ mytoken + 'len:'+str(len(mytoken)))
+
+	try:
+		rec = Domande.objects.get(pk=id)
+	except:
+		msg = 'Domanda con Id.' + str(id) + 'inesistente'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if rec.pr_stato != 0:
+		msg = 'Domanda già confermata ed archiviata'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	asilorec = Asili.objects.get(pk=rec.pr_asilo.id)
+	context = {'data': rec, 'asilo': asilorec.nome, 'id': id}
+
+	# visualizzo anche gli allegati se ci sono
+	photos_list = Allegati.objects.filter(domanda_num=id)
+	if photos_list.count() > 0:
+		context['photos'] = photos_list
+
+	if request.method == 'POST':
+		request.session['last_url'] = 'review_domanda'
+		if 'edit' in request.POST:
+			next_url = get_url_prefix() + '/update_domanda/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		elif 'addfiles' in request.POST:
+
+			next_url = get_url_prefix() + '/upload/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		else:  # premuto conferma finale
+			context = {'data': rec, 'asilo': asilorec.nome, 'id': id}
+
+			if rec.pr_tipo_asilo =='P':
+				result = check_finale(id)
+			else:
+				result = 'OK'
+
+			if result != 'OK':
+				mess = {result, }
+				context['messages'] = mess
+				return render(request, 'rivedi_domanda.html', context)
+			else:
+				# mettendo stato a 1 significa che l'utente ha confermato e inviato la domanda
+				rec.pr_stato = 1
+				rec.save()
+				# il riepilogo della domanda viene inviato via email
+				send_riep_domanda(rec.so_email, rec.pk)
+
+				next_url = get_url_prefix() + '/msgfinale/' + str(id)
+
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+
+				return HttpResponseRedirect(next_url)
+
+	return render(request, 'rivedi_domanda.html', context)
+
+def check_finale(id):
+
+	rec = Domande.objects.get(pk=id)
+	if rec.pr_num_tot_ricevute > 0 and rec.pr_tipo_asilo == 'P':
+		# controlla la presenza di tanti allegati quanto indicato nel campo
+		num_allegati = Allegati.objects.filter(domanda_num=id).count()
+		if num_allegati != rec.pr_num_tot_ricevute:
+			return "Nella domanda ha specificato num.ricevute allegate:" + str(rec.pr_num_tot_ricevute) + ' mentre i file caricati sono '+str(num_allegati)
+	return "OK"
+
+
+class JsonAsiliViewSet(viewsets.ModelViewSet):
+	queryset = Asili.objects.all()
+	serializer_class = AsiliJsonSerializer
+
+
+def testjs(request):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	context = {'errmessage': 'Non sei autorizzato alla visione della domanda'}
+	return render(request, "errormessages.html", context)
+	form = CrispyTestJsform()
+	context = {'form': form}
+	return render(request, 'testjs.html', context)
+
+
+class BasicUploadView(View):
+
+	def get(self, request):
+		if true:
+			# if request.session['domanda_id']:
+			# domanda_num = request.session['domanda_id']
+
+			photos_list = Allegati.objects.filter(domanda_num=domanda_num)
+			context = {'photos': photos_list}
+			return render(self.request, 'upload.html', context)
+		else:
+			return HttpResponse('Non sei autorizzato la caricamento allegati')
+
+	def post(self, request):
+
+		form = PhotoForm(self.request.POST, self.request.FILES)
+		if form.is_valid():
+			photo = form.save(commit=False)
+			photo.data_inserimento = timezone.now()
+			print("foto salvata per domanda num." + str(request.session['domanda_id']))
+			photo.domanda_num = request.session['domanda_id']
+			photo.save()
+			print("url:" + photo.file.url)
+			data = {'is_valid': True, 'name': photo.file.name, 'url': photo.file.url}
+		else:
+			data = {'is_valid': False}
+		return JsonResponse(data)
+
+
+def handle_uploaded_file(f):
+	with open('tmp/' + randomString(11), 'wb+') as destination:
+		for chunk in f.chunks():
+			destination.write(chunk)
+import string
+
+def randomString(stringLength):
+	letters = string.ascii_letters
+	return ''.join(random.choice(letters) for i in range(stringLength))
+
+# ********************************************************************************************************
+#               UPLOAD_FILE
+# ********************************************************************************************************
+def upload_file(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	form = None
+	if request.method == 'POST':
+		if 'carica' in request.POST:
+			form = PhotoForm(request.POST, request.FILES)
+
+			if form.is_valid():
+				rec_allegato = {}
+				rec_allegato['domanda_num'] = id
+				rec_allegato['file'] = form.cleaned_data['file']
+				rec_allegato['descrizione'] = form.cleaned_data['descrizione']
+				Allegati.objects.create(**rec_allegato)
+
+				next_url = get_url_prefix() + '/upload/' + str(id) + '/'
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+
+				return HttpResponseRedirect(next_url)
+
+		elif 'clear' in request.POST:
+			next_url = get_url_prefix() + '/clear_files/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+
+			return HttpResponseRedirect(next_url)
+
+	else:
+		form = PhotoForm()
+
+	next_url = get_url_prefix() + '/review_domanda/' + str(id) + '/'
+	url_clear_allfiles = get_url_prefix() + '/clear_files/' + str(id) + '/'
+	photos_list = Allegati.objects.filter(domanda_num=id)
+	context = {'form': form, 'photos': photos_list, 'url_ritorno': next_url, 'url_deleteall': url_clear_allfiles}
+
+	return render(request, 'massivo.html', context)
+# ********************************************************************************************************
+#                           CLEAR_DATABASE
+# ********************************************************************************************************
+def clear_database(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	for photo in Allegati.objects.filter(domanda_num=id):
+		photo.file.delete()
+		photo.delete()
+
+	curr_url = get_url_prefix() + '/upload/' + str(id) + '/'
+	photos_list = None
+	context = {'form': PhotoForm(), 'photos': photos_list, 'url_ritorno': curr_url}
+
+	return render(request, 'massivo.html', context)
+
+
+def msgfinale(request, id):
+	return render(request, "testmessages.html", {'id': id})
+
+
+def domandatest(request):
+	cf_test = 'BRGLWG73S24I726A'
+
+	test_token = randomString(11)
+	rec_prec = Ingressi.objects.filter(codice_fiscale=cf_test, token=test_token)
+	if rec_prec.count() == 0:
+		rec_prec = Ingressi.objects.create( email="tonino.lavorati@gmail.com",
+										   isee='23573.04', codice_fiscale=cf_test,
+										   data_dsu=datetime.datetime(2020, 2, 6),
+										   protocollo_inps='INPS-ISEE-2020-02368418C-00', token='BRGLWG73S24I726A', stato=0)
+		rec_prec.save()
+	request.session.flush()
+	request.session['token'] = test_token
+	print("token:"+ str(test_token))
+	testdomande_rec = Domande.objects.filter(pr_codfiscale='BRGRLA16S69E202I')
+	if True:
+		domanda_data = {}
+		domanda_data['token'] = test_token
+		domanda_data['pr_data_richiesta'] = datetime.date.today()
+		domanda_data['so_cognome'] = 'BARGAGLI'
+		domanda_data['so_nome'] = 'LUDWIG'
+		domanda_data['so_nasc_dt'] = datetime.datetime(1973, 11, 24)
+		domanda_data['so_nasc_com'] = 'SIENA'
+		domanda_data['so_flag_residente'] = 1
+		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
+		domanda_data['so_sesso'] = 'M'
+		domanda_data['so_email'] = rec_prec.email
+		domanda_data['pr_isee'] = rec_prec.isee
+		domanda_data['pr_cognome'] = 'BARGAGLI'
+		domanda_data['pr_nome'] = 'ARIEL'
+		domanda_data['pr_sesso'] = 'F'
+		domanda_data['pr_nasc_dt'] = datetime.datetime(2016, 11, 29)
+		domanda_data['pr_nasc_com'] = 'GROSSETO'
+		domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
+		domanda_data['pr_tipo_asilo'] = 'P'
+		domanda_data['pr_asilo'] = Asili.objects.get(pk=11)
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['pr_retta_mese'] = 280
+		domanda_data['pr_mesi_frequenza'] = 5
+		domanda_data['pr_num_tot_ricevute'] = 5
+		domanda_data['pr_importo_tot_ricevute'] = 1400
+		rec = Domande.objects.create(**domanda_data)
+		print("creata domanda num." + str(rec.pk))
+		domanda_num = rec.pk
+	else:
+		domanda_num = testdomande_rec[0].pk
+
+	return redirect(get_url_prefix() + '/update_domanda/' + str(domanda_num)+'/')
+from django.shortcuts import render, redirect
+from django.views import View
+from django.conf import settings
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, JsonResponse
+from .tasks import *
+from .forms import *
+from .domande_forms import *
+from .models import *
+from rest_framework import viewsets
+from django.utils import timezone
+from back.serializers_json import *
+from django.contrib import messages
+from django.contrib.messages import get_messages
+from codicefiscale import codicefiscale
+import random
+import datetime
+
+def get_url_prefix():
+	if settings.USE_ABSOLUTE_PATH == 'True':
+		if settings.HOSTNAME[0:7] != "http://":
+			hostname = "http://" + settings.HOSTNAME
+		else:
+			hostname = settings.HOSTNAME
+
+		return hostname
+	else:
+		return '/front'
+
+
+def sito_fermo(request):
+	return render(request, 'blackout.html')
+
+
+def preform_insert(request):
+	dt_scadenza = datetime.datetime.strptime(settings.DATA_SCADENZA, "%d/%m/%Y").date()
+
+	if timezone.now().date() > dt_scadenza:
+		context = {'scadenza': settings.DATA_SCADENZA}
+		return render(request, 'preform_fine.html', context)
+
+	if request.method == 'GET':
+		form = CrispyPreForm(initial={'protocollo_inps': 'INPS-ISEE-2020-XXXXXXXXX-00', 'isee': 0.0})
+	else:
+		form = CrispyPreForm(request.POST)
+		if form.is_valid():
+			preform = form.save(commit=False)
+			preform.data_ingresso = timezone.now()
+			preform.save()
+			# visualizza messaggio di conferma all'utente
+			return render(request, 'response.html')
+
+	context = {'form': form}
+	return render(request, 'preform.html', context)
+
+
+def domandatest2(request):
+	cf_test = 'BRGLWG73S24I726A'
+
+	test_token = randomString(11)
+	rec_prec = Ingressi.objects.filter(codice_fiscale=cf_test, token=test_token)
+	if rec_prec.count() == 0:
+		rec_prec = Ingressi.objects.create(codfis_bimbo='BRGRLA16S69E202I', data_ingresso=datetime.datetime.now(),
+										   email="tonino.lavorati@gmail.com", isee='23573.04', codice_fiscale=cf_test,
+										   data_dsu=datetime.datetime(2020, 2, 6),
+										   protocollo_inps='INPS-ISEE-2020-02368418C-00', token=test_token, stato=0)
+		rec_prec.save()
+
+	testdomande_rec = Domande.objects.filter(pr_codfiscale='BRGRLA16S69E202I')
+
+	if testdomande_rec.count() == 0:
+		domanda_data = {}
+		domanda_data['token'] = test_token
+		domanda_data['so_cognome'] = 'BARGAGLI'
+		domanda_data['so_nome'] = 'LUDWIG'
+		domanda_data['so_nasc_dt'] = datetime.datetime(1973, 11, 24)
+		domanda_data['so_nasc_com'] = 'SIENA'
+		domanda_data['so_email'] = "tonino.lavorati@gmail.com"
+		domanda_data['so_flag_residente'] = 1
+		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
+		domanda_data['so_sesso'] = 'M'
+		domanda_data['pr_cognome'] = 'BARGAGLI'
+		domanda_data['pr_nome'] = 'ARIEL'
+		domanda_data['pr_sesso'] = 'F'
+		domanda_data['pr_nasc_dt'] = datetime.datetime(2016, 11, 29)
+		domanda_data['pr_nasc_com'] = 'GROSSETO'
+		domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
+		domanda_data['pr_tipo_asilo'] = 'P'
+		domanda_data['pr_asilo'] = Asili.objects.get(pk=11)
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['pr_retta_mese'] = 280
+		domanda_data['pr_mesi_frequenza'] = 5
+		domanda_data['pr_num_tot_ricevute'] = 5
+		domanda_data['pr_importo_tot_ricevute'] = 1400
+		rec = Domande.objects.create(**domanda_data)
+		print("creata domanda num." + str(rec.pk))
+		domanda_num = rec.pk
+	else:
+		domanda_num = testdomande_rec[0].pk
+
+	return redirect(get_url_prefix() + '/review_domanda/' + str(domanda_num))
+
+# ********************************************************************************************************
+#               INSERT_DOMANDA
+# ********************************************************************************************************
+def insert_domanda(request):
+	domandaform = None
+	if request.method == 'GET':
+		if 'token' not in request.GET:
+			msg = 'Utente non autorizzato. Impossibile continuare'
+			context = {'errmessage': msg}
+			return render(request, "errormessages.html", context)
+
+		mytoken = request.GET['token']
+		if settings.DEBUG:
+			print("token: " + mytoken)
+		request.session['token'] = mytoken
+		request.session['domanda_id'] = None
+		# ricerca la domanda collegata al token
+		rec_domanda = Domande.objects.filter(token=mytoken)
+		nDomande = rec_domanda.count()
+
+		if nDomande == 1:  # se il record con quel token già esiste si va in update
+			rec = rec_domanda[0]
+			if settings.DEBUG:
+				print("domanda trovata. Id:" + str(id) + " stato:"+  str(rec.pr_stato))
+				print("token in  sessione:"+ request.session['token'])
+			# dallo stato della domanda decido se cosa può fare l'utente
+			if rec.pr_stato <= 1 :
+				request.session['domanda_id'] = rec.id
+				next_url = get_url_prefix() + '/review_domanda/' + str(rec.id) + '/'
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+				return HttpResponseRedirect(next_url)
+			elif (rec.pr_stato == 2):  # domanda confermata dall'ufficio
+				msg = 'La  domanda con id.' + str(rec.id) + ' è già stata verificata e archiviata.'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+			elif (rec.pr_stato > 4):  # domanda annullata dall'ufficio
+				msg = 'La  domanda con id.' + str(rec.id) + ' è già stata controllata e annullata per dati non corretti.'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+
+		elif nDomande == 0:  # la prima volta che l'utente accede con quel token va creato un record per la domanda
+			# dal token passato in Get si risale all'ingresso corrispondente e si recuperano i dati precompilati
+			ingressi = Ingressi.objects.filter(token=mytoken)
+
+			if ingressi.count() == 1:  # trovato l'ingresso corrispondente
+				rec = ingressi[0]
+				cod_fiscale = rec.codice_fiscale
+				cf = codicefiscale.decode(cod_fiscale)
+				luogo_nascita_ric=cf['birthplace']['name']
+				dtnascita_ric =  cf ['birthdate']
+				sex_ric = cf['sex']
+				cod_fiscale = rec.codfis_bimbo
+				cf = codicefiscale.decode(cod_fiscale)
+				luogo_nascita_minore = cf['birthplace']['name']
+				dtnascita_minore =  cf ['birthdate']
+				sex_minore = cf['sex']
+
+				form = CrispyDomandaForm(
+						initial={'token': mytoken, 'pr_data_richiesta': timezone.now().date, 'pr_isee': rec.isee,
+							 'pr_data_isee_inps': rec.data_dsu,
+							 'pr_prot_isee_inps': rec.protocollo_inps[15:24], 'so_cod_fis': rec.codice_fiscale,
+							 'so_nasc_dt': dtnascita_ric, 'so_nasc_com': luogo_nascita_ric, 'so_sesso': sex_ric,
+							 'so_tel': rec.tel, 'so_email': rec.email, 'so_risc_diretta': 'S',
+							 'pr_codfiscale': rec.codfis_bimbo, 'pr_sesso': sex_minore,
+							 'pr_nasc_dt': dtnascita_minore, 'pr_nasc_com': luogo_nascita_minore,
+							 'pr_tipo_asilo': 'C', 'pr_asilo': Asili.objects.get(pk=1)})
+
+			else:  # token sconosciuto
+				msg = 'Utente non autorizzato. Impossibile continuare'
+				context = {'errmessage': msg}
+				return render(request, "errormessages.html", context)
+	else:
+		# Post dopo premuto Salva
+		form = CrispyDomandaForm(request.POST)
+		form_ok = form.is_valid()
+		if form_ok:
+			domandaform = form.save(commit=False)
+
+			# si aggiorna il record con i dati dai campi non Db
+			# si leggono i valori da campi non db per tipo e asilo  e si scrivono nei campi db
+			# si trova il record  di Asili da legare in FK
+			asilo_cod = form.cleaned_data['selasilo']
+			asilorec = Asili.objects.get(pk=asilo_cod)
+			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
+			domandaform.pr_asilo = asilorec
+			#	si toglie l'iban farlocco messo all'inizio per passare il clean
+			if domandaform.so_risc_diretta == 'S':
+				domandaform.so_banca_iban = ''
+			domandaform.save()
+			# ripresento in lettura i dati  all'utente
+			next_url = get_url_prefix() + '/review_domanda/' + str(domandaform.pk) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+	context = {'form': form}
+	return render(request, 'insert_domanda.html', context)
+
+# ********************************************************************************************************
+#               UPDATE_DOMANDA
+# ********************************************************************************************************
+def update_domanda(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	try:
+		rec = Domande.objects.get(pk=id)
+
+	except:
+		msg = 'Domanda con Id.'+str(id) + 'inesistente'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if request.method == 'GET':
+		asilorec = rec.pr_asilo
+		campi_nodb = {'seltipoasilo': rec.pr_tipo_asilo, 'selasilo': asilorec.pk}
+		form = CrispyDomandaForm(instance=rec, initial=campi_nodb)
+		if settings.DEBUG:
+			print("form in GET")
+			print(form)
+	else:
+		# Post dopo premuto Salva
+		form = CrispyDomandaForm(request.POST, instance=rec)
+		if settings.DEBUG:
+			print(form)
+		form_ok = form.is_valid()
+		if form_ok:
+			domandaform = form.save(commit=False)
+
+			# si aggiorna il record con i dati dai campi non Db
+			# si leggono i valori da campi non db per tipo e asilo  e si scrivono nei campi db
+			# si trova il record  di Asili da legare in FK
+			asilo_cod = form.cleaned_data['selasilo']
+			asilorec = Asili.objects.get(pk=asilo_cod)
+			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
+			domandaform.pr_asilo = asilorec
+			#	si toglie l'iban farlocco messo all'inizio per passare il clean
+			if domandaform.so_risc_diretta == 'S':
+				domandaform.so_banca_iban = ''
+			domandaform.save()
+			# ripresento in lettura i dati  all'utente
+			next_url = get_url_prefix() + '/review_domanda/' + str(domandaform.pk) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		else:
+			if settings.DEBUG:
+				print(form.errors.as_data())
+			context = {'form': form}
+			return render(request, 'insert_domanda.html', context)
+
+		# rifacciamo vedere i dati in sola lettura all'utente
+		request.session['token'] = mytoken
+		next_url = get_url_prefix() + '/review_domanda/' + str(id) + '/'
+		if settings.DEBUG:
+			print("da update_domanda redirect to " + next_url)
+
+		return HttpResponseRedirect(next_url)
+
+	context = {'form': form}
+	return render(request, 'insert_domanda.html', context)
+
+# ********************************************************************************************************
+#               REVIEW_DOMANDA
+# ********************************************************************************************************
+def review_domanda(request, id):
+	if 'token'  in request.session:
+		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if settings.DEBUG:
+		print("domanda review. Id:" + str(id))
+		print("token in  sessione:"+ mytoken + 'len:'+str(len(mytoken)))
+
+	try:
+		rec = Domande.objects.get(pk=id)
+	except:
+		msg = 'Domanda con Id.' + str(id) + 'inesistente'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	if rec.pr_stato != 0:
+		msg = 'Domanda già confermata ed archiviata'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	asilorec = Asili.objects.get(pk=rec.pr_asilo.id)
+	context = {'data': rec, 'asilo': asilorec.nome, 'id': id}
+
+	# visualizzo anche gli allegati se ci sono
+	photos_list = Allegati.objects.filter(domanda_num=id)
+	if photos_list.count() > 0:
+		context['photos'] = photos_list
+
+	if request.method == 'POST':
+		request.session['last_url'] = 'review_domanda'
+		if 'edit' in request.POST:
+			next_url = get_url_prefix() + '/update_domanda/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		elif 'addfiles' in request.POST:
+
+			next_url = get_url_prefix() + '/upload/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+			return HttpResponseRedirect(next_url)
+
+		else:  # premuto conferma finale
+			context = {'data': rec, 'asilo': asilorec.nome, 'id': id}
+
+			if rec.pr_tipo_asilo =='P':
+				result = check_finale(id)
+			else:
+				result = 'OK'
+
+			if result != 'OK':
+				mess = {result, }
+				context['messages'] = mess
+				return render(request, 'rivedi_domanda.html', context)
+			else:
+				# mettendo stato a 1 significa che l'utente ha confermato e inviato la domanda
+				rec.pr_stato = 1
+				rec.save()
+				# il riepilogo della domanda viene inviato via email
+				send_riep_domanda(rec.so_email, rec.pk)
+
+				next_url = get_url_prefix() + '/msgfinale/' + str(id)
+
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+
+				return HttpResponseRedirect(next_url)
+
+	return render(request, 'rivedi_domanda.html', context)
+
+def check_finale(id):
+
+	rec = Domande.objects.get(pk=id)
+	if rec.pr_num_tot_ricevute > 0 and rec.pr_tipo_asilo == 'P':
+		# controlla la presenza di tanti allegati quanto indicato nel campo
+		num_allegati = Allegati.objects.filter(domanda_num=id).count()
+		if num_allegati != rec.pr_num_tot_ricevute:
+			return "Nella domanda ha specificato num.ricevute allegate:" + str(rec.pr_num_tot_ricevute) + ' mentre i file caricati sono '+str(num_allegati)
+	return "OK"
+
+
+class JsonAsiliViewSet(viewsets.ModelViewSet):
+	queryset = Asili.objects.all()
+	serializer_class = AsiliJsonSerializer
+
+
+def testjs(request):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	context = {'errmessage': 'Non sei autorizzato alla visione della domanda'}
+	return render(request, "errormessages.html", context)
+	form = CrispyTestJsform()
+	context = {'form': form}
+	return render(request, 'testjs.html', context)
+
+
+class BasicUploadView(View):
+
+	def get(self, request):
+		if true:
+			# if request.session['domanda_id']:
+			# domanda_num = request.session['domanda_id']
+
+			photos_list = Allegati.objects.filter(domanda_num=domanda_num)
+			context = {'photos': photos_list}
+			return render(self.request, 'upload.html', context)
+		else:
+			return HttpResponse('Non sei autorizzato la caricamento allegati')
+
+	def post(self, request):
+
+		form = PhotoForm(self.request.POST, self.request.FILES)
+		if form.is_valid():
+			photo = form.save(commit=False)
+			photo.data_inserimento = timezone.now()
+			print("foto salvata per domanda num." + str(request.session['domanda_id']))
+			photo.domanda_num = request.session['domanda_id']
+			photo.save()
+			print("url:" + photo.file.url)
+			data = {'is_valid': True, 'name': photo.file.name, 'url': photo.file.url}
+		else:
+			data = {'is_valid': False}
+		return JsonResponse(data)
+
+
+def handle_uploaded_file(f):
+	with open('tmp/' + randomString(11), 'wb+') as destination:
+		for chunk in f.chunks():
+			destination.write(chunk)
+import string
+
+def randomString(stringLength):
+	letters = string.ascii_letters
+	return ''.join(random.choice(letters) for i in range(stringLength))
+
+# ********************************************************************************************************
+#               UPLOAD_FILE
+# ********************************************************************************************************
+def upload_file(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	form = None
+	if request.method == 'POST':
+		if 'carica' in request.POST:
+			form = PhotoForm(request.POST, request.FILES)
+
+			if form.is_valid():
+				rec_allegato = {}
+				rec_allegato['domanda_num'] = id
+				rec_allegato['file'] = form.cleaned_data['file']
+				rec_allegato['descrizione'] = form.cleaned_data['descrizione']
+				Allegati.objects.create(**rec_allegato)
+
+				next_url = get_url_prefix() + '/upload/' + str(id) + '/'
+				if settings.DEBUG:
+					print("redirect to " + next_url)
+
+				return HttpResponseRedirect(next_url)
+
+		elif 'clear' in request.POST:
+			next_url = get_url_prefix() + '/clear_files/' + str(id) + '/'
+			if settings.DEBUG:
+				print("redirect to " + next_url)
+
+			return HttpResponseRedirect(next_url)
+
+	else:
+		form = PhotoForm()
+
+	next_url = get_url_prefix() + '/review_domanda/' + str(id) + '/'
+	url_clear_allfiles = get_url_prefix() + '/clear_files/' + str(id) + '/'
+	photos_list = Allegati.objects.filter(domanda_num=id)
+	context = {'form': form, 'photos': photos_list, 'url_ritorno': next_url, 'url_deleteall': url_clear_allfiles}
+
+	return render(request, 'massivo.html', context)
+# ********************************************************************************************************
+#                           CLEAR_DATABASE
+# ********************************************************************************************************
+def clear_database(request, id):
+	# controllo che  il token della domanda sia in sessione
+	if 'token'  in request.session:
+    		mytoken = request.session['token']
+	else:
+		msg = 'Utente non autorizzato. Impossibile continuare'
+		context = {'errmessage': msg}
+		return render(request, "errormessages.html", context)
+
+	for photo in Allegati.objects.filter(domanda_num=id):
+		photo.file.delete()
+		photo.delete()
+
+	curr_url = get_url_prefix() + '/upload/' + str(id) + '/'
+	photos_list = None
+	context = {'form': PhotoForm(), 'photos': photos_list, 'url_ritorno': curr_url}
+
+	return render(request, 'massivo.html', context)
+
+
+def msgfinale(request, id):
+	return render(request, "testmessages.html", {'id': id})
+
+
+def domandatest(request):
+	cf_test = 'BRGLWG73S24I726A'
+
+	test_token = randomString(11)
+	rec_prec = Ingressi.objects.filter(codice_fiscale=cf_test, token=test_token)
+	if rec_prec.count() == 0:
+		rec_prec = Ingressi.objects.create( email="tonino.lavorati@gmail.com",
+										   isee='23573.04', codice_fiscale=cf_test,
+										   data_dsu=datetime.datetime(2020, 2, 6),
+										   protocollo_inps='INPS-ISEE-2020-02368418C-00', token='BRGLWG73S24I726A', stato=0)
+		rec_prec.save()
+	request.session.flush()
+	request.session['token'] = test_token
+	print("token:"+ str(test_token))
+	testdomande_rec = Domande.objects.filter(pr_codfiscale='BRGRLA16S69E202I')
+	if True:
+		domanda_data = {}
+		domanda_data['token'] = test_token
+		domanda_data['pr_data_richiesta'] = datetime.date.today()
+		domanda_data['so_cognome'] = 'BARGAGLI'
+		domanda_data['so_nome'] = 'LUDWIG'
+		domanda_data['so_nasc_dt'] = datetime.datetime(1973, 11, 24)
+		domanda_data['so_nasc_com'] = 'SIENA'
+		domanda_data['so_flag_residente'] = 1
+		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
+		domanda_data['so_sesso'] = 'M'
+		domanda_data['so_email'] = rec_prec.email
+		domanda_data['pr_isee'] = rec_prec.isee
+		domanda_data['pr_cognome'] = 'BARGAGLI'
+		domanda_data['pr_nome'] = 'ARIEL'
+		domanda_data['pr_sesso'] = 'F'
+		domanda_data['pr_nasc_dt'] = datetime.datetime(2016, 11, 29)
+		domanda_data['pr_nasc_com'] = 'GROSSETO'
+		domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
+		domanda_data['pr_tipo_asilo'] = 'P'
+		domanda_data['pr_asilo'] = Asili.objects.get(pk=11)
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['so_risc_diretta'] = 'N'
+		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
+		domanda_data['pr_retta_mese'] = 280
+		domanda_data['pr_mesi_frequenza'] = 5
+		domanda_data['pr_num_tot_ricevute'] = 5
+		domanda_data['pr_importo_tot_ricevute'] = 1400
+		rec = Domande.objects.create(**domanda_data)
+		print("creata domanda num." + str(rec.pk))
+		domanda_num = rec.pk
+	else:
+		domanda_num = testdomande_rec[0].pk
+
+	return redirect(get_url_prefix() + '/update_domanda/' + str(domanda_num)+'/')
+
