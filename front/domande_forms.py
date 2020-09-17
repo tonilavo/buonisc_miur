@@ -126,21 +126,21 @@ class CrispyDomandaForm(Domandeform):
             Fieldset('Dati  anagrafici del  minore',
                  Row(
                      Column('pr_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
-                     Column('pr_nome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
-                     Column('pr_codfiscale', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
-                     css_class='form-row col-md-8', style='padding-bottom:60px'
+                     Column('pr_nome', css_class='form-control col-md-2 mb-2', style='padding-right:30px;'),
+                     Column('pr_codfiscale', css_class='form-control col-md-2 mb-2', style='padding-right:30px;'),
+                     css_class='form-row col-md-12', style='padding-bottom:60px'
                  ),
                  Row(
-                     Column('pr_nasc_dt', css_class='form-control col-md-4 mb-2'),
-                     Column('pr_nasc_com', css_class='form-control col-md-4 mb-2', style='padding-right:50px'),
                      Column('pr_sesso', css_class='form-control col-md-2 mb-2'),
+                     Column('pr_nasc_dt', css_class='form-control col-md-2 mb-2'),
+                     Column('pr_nasc_com', css_class='form-control col-md-6 mb-2', style='padding-right:50px'),
                      css_class='form-row  col-md-12', style='padding-bottom:60px;'
                  )),
             Fieldset('Dati di frequenza',
                  Row(
                      Column('pr_fascia_asilo', css_class='form-control col-md-4 mb-4'),
-                     Column('pr_tipo_asilo', css_class='form-control col-md-2 mb-4'),
-                     Column('pr_imp_buoniscuola', css_class='form-control col-md-6 mb-4', style='padding-right:30px;'),
+                     Column('pr_tipo_asilo', css_class='form-control col-md-4 mb-4'),
+                     Column('pr_imp_buoniscuola', css_class='form-control col-md-2 mb-4', style='padding-right:30px;'),
                      css_class='form-row  col-md-8', style='padding-top:10px;padding-bottom:50px;'
                  ),
                  Fieldset('',
@@ -245,14 +245,8 @@ class CrispyDomandaForm(Domandeform):
             if not data.get('so_banca_iban'):
                 raise forms.ValidationError("Indicare l'IBAN dell'intestatario")
 
-        if not data.get('pr_num_tot_ricevute') or not data.get('pr_importo_tot_ricevute'):
+        if data.get('pr_tipo_asilo')=='P' and (not data.get('pr_num_tot_ricevute') or not data.get('pr_importo_tot_ricevute')):
             raise forms.ValidationError("Indicare il numero delle ricevute di spesa da allegare con il loro importo complessivo.")
-        elif data.get('pr_fascia_asilo') == 'N':
-            if data.get('pr_num_tot_ricevute') > 4:
-                raise forms.ValidationError("Indicare un numero massimo di 4 ricevute allegate per il periodo gennaio aprile 2020.")
-        else: # fascia materne
-            if data.get('pr_num_tot_ricevute') > 8:
-                raise forms.ValidationError("Indicare al massimo un numero di 8 ricevute allegate  per il periodo settembre 2019 - aprile 2020.")
 
         # controlli sui dati domicilio per non residenti
         if data.get('so_flag_residente') == 0:
@@ -261,6 +255,14 @@ class CrispyDomandaForm(Domandeform):
 
         if not data.get('pr_data_richiesta'):
             data['pr_data_richiesta'] = timezone.now
+
+        #controllo su spesa mensile
+        if data.get('pr_fascia_asilo') == 'N':
+            if data.get('pr_spesa_mese')  <= 168:
+                raise forms.ValidationError("Si accettano solo domande con spesa mensile superiore a 168 euro.")
+        else:
+            if data.get('pr_spesa_mese')  <= 120:
+                raise forms.ValidationError("Si accettano solo domande con spesa mensile superiore a 120 euro.")
 
         data['so_cognome'] = data.get('so_cognome').upper()
         data['so_nome'] = data.get('so_nome').upper()

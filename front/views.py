@@ -292,7 +292,7 @@ def check_finale(id):
 		# controlla la presenza di tanti allegati quanto indicato nel campo
 		num_allegati = Allegati.objects.filter(domanda_num=id).count()
 		if num_allegati != rec.pr_num_tot_ricevute:
-			return "Nella domanda ha specificato num.ricevute allegate:" + str(rec.pr_num_tot_ricevute) + ' mentre i file caricati sono '+str(num_allegati)
+			return "Nella domanda ha specificato num.ricevute allegate:" + str(rec.pr_num_tot_ricevute) + ' mentre i file caricati sono in numero '+str(num_allegati)
 	return "OK"
 
 class BasicUploadView(View):

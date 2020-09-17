@@ -28,7 +28,7 @@ class Preform(ModelForm):
         recs=Ingressi.objects.filter(codfis_bimbo=codfiscale, stato__lte=2)
 
         if recs.count() > 0 and not self.instance.pk: #esiste un'altra preform con lo stesso cidfis minore e stato non annullato
-            raise forms.ValidationError('Richiesta per il bimbo con cod.fiscale '+ codfiscale + ' già presente.')
+            raise forms.ValidationError('Richiesta  già presente per il minore con cod.fiscale '+ codfiscale + '.')
         data['codfis_bimbo'] = codfiscale
 
         #controllo codice fiscale richiedente
@@ -52,20 +52,20 @@ class CrispyPreForm(Preform):
         self.helper.layout = Layout(
             Row(
                 Column('codice_fiscale', css_class='form-control  col-md-6 mb-6'),
-                css_class='form-row ', style='padding-bottom:50px;'
+                css_class='form-row  col-md-8', style='padding-bottom:90px;'
                 ),
             Row(
                 Column('email', css_class='form-control col-md-6 mb-6', style='padding-right:50px;'),
-                Column('tel', css_class='form-control col-md-4 mb-6'),
-                css_class='form-row col-md-8', style='padding-bottom:50px;'
+                Column('tel', css_class='form-control col-md-6 mb-6'),
+                css_class='form-row col-md-12', style='padding-bottom:90px;'
                 ),
             Row(
                 Column('codfis_bimbo', css_class='form-control  col-md-6 mb-6'),
-                css_class='form-row ', style='padding-bottom:50px;'
+                css_class='form-row ', style='padding-bottom:90px;'
             ),
             Row(
                 HTML('<div class="g-recaptcha" data-sitekey="6LdTmPUUAAAAAJHs1p_cn9ME_qOOw5264feotBNr" style="padding-bottom:30px;padding-right:40px;"></div>'),
                 Column(Submit('submit', 'Salva'), css_class='form-control col-md-6 mb-6'),
-                css_class='form-row', style='padding-bottom:20px;'
+                css_class='form-row col-md-8', style='padding-bottom:20px;'
             )
         )
