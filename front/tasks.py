@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from access_tokens import scope, tokens
 from .models import *
+from .views import *
 from .domande_forms import *
 from django.conf import settings
 import os
@@ -13,16 +14,8 @@ def sleepy(duration):
 	sleep(duration)
 	return None
 
-
-
 @shared_task
-def send_token(idIngresso):
-
-	if settings.HOSTNAME[0:7]!= "http://":
-		hostname = "http://" + settings.HOSTNAME
-	else:
-		hostname = settings.HOSTNAME
-
+def send_link_form(idIngresso):
 	token = tokens.generate(scope=(), key="", salt="None")
 	#al momento di generare il token, questo viene salvato nel db per matcharlo con la richiesta di aprire il form della domanda
 	rec=Ingressi.objects.get(pk=idIngresso)
@@ -31,13 +24,14 @@ def send_token(idIngresso):
 	rec.token=token
 	rec.save()
 	print("token generato per id:"+str(id)+ '='+ token)
-	url_domanda =  hostname + '/domanda/?token='+token
+
+	url_domanda = get_url_prefix() + '/domanda/?token='+token
 	context = {'url_domanda': url_domanda}
 	message_txt = render_to_string('email_to.txt',  context)
 	print(message_txt)
 	message_html = render_to_string('email_to.html',  context)
 	print(message_html)
-	send_mail("Comune di Grosseto - invio del token per la compilazione della richiesta di buoni MIUR per materne/nidi",
+	send_mail("Comune di Grosseto - invio del token per la compilazione della richiesta di buoni MIUR per nidi/materne",
 		message_txt,
         settings.EMAIL_HOST_USER,
 		[rec.email],
@@ -45,19 +39,14 @@ def send_token(idIngresso):
 	return None
 
 @shared_task
-def resend_token(idIngresso):
-	if settings.HOSTNAME[0:7]!= "http://":
-		hostname = "http://" + settings.HOSTNAME
-	else:
-		hostname = settings.HOSTNAME
-
+def resend_link_form(idIngresso):
 	rec = Ingressi.objects.get(pk=idIngresso)
-	url_domanda =  hostname + '/domanda/?token=' + rec.token
+	url_domanda = get_url_prefix() + '/domanda/?token=' + rec.token
 	context = {'url_domanda': url_domanda}
 	message_txt = render_to_string('email_to.txt',  context)
 	message_html = render_to_string('email_to.html',  context)
 	print(message_html)
-	send_mail("Comune di Grosseto - Reinvio del token per la compilazione della richiesta di buoni MIUR per materne/nidi",
+	send_mail("Comune di Grosseto - reinvio del token per la compilazione della richiesta di buoni MIUR per nidi/materne",
 		message_txt,
         settings.EMAIL_HOST_USER,
 		[rec.email],
@@ -83,27 +72,13 @@ def send_msg_domandanonvalida(idDomanda):
 	return None
 
 @shared_task
-def send_ok_preform(user_email):
-	context = None
-	message_txt = render_to_string('response.txt',  context)
-	message_html = render_to_string('response.html',  context)
-	print(message_html)
-	oggetto = 'Comune di Grosseto - token inviato per la compilazione della richiesta di buoni MIUR'
-	send_mail(oggetto,
-		message_txt,
-        settings.EMAIL_HOST_USER,
-		[user_email],
-		html_message=message_html)
-	return None
-
-@shared_task
 def send_riep_domanda(user_email, id):
 	rec= Domande.objects.get(pk=id)
-	asilorec=Asili.objects.get(pk=rec.pr_asilo.id)
+
 
 	form=Domandeform(instance=rec)
 
-	context = {'form': form, 'asilo':asilorec.nome, 'id': id}
+	context = {'form': form, 'id': id}
 	print("task context")
 	print(context)
 
