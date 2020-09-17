@@ -1,22 +1,73 @@
 {% extends "baseBootstrap4.html" %}
 {% load crispy_forms_tags %}
+{% load l10n %}
 {% load static %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 
 {% block content %}
-	{% block extra_js %}
+{% block extra_js %}
 	<!--script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script-->
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<script>
 
-	<script src="{% static 'js/domande_scripts.js' %}"></script>
+			function hide(elemId){
+				elem =	document.getElementById(elemId)
+				elem.style.display="none"
+			}
+
+			function show(elemId){
+				elem	=	document.getElementById(elemId)
+				elem.style.display = "block"
+			}
+
+			function show_campi_xfascia(fascia_asilo) {
+					if (fascia_asilo == 'M') {
+							document.getElementById("campi_nido").style.display = "none";
+
+					} else {
+							document.getElementById("campi_nido").style.display = "block";
+					}
+			}
+
+			function showhide_domicilio(residenteSN) {
+	        target = document.getElementById("domicilio");
+	        if (residenteSN == 1) { // residente
+	            target.style.display = "none";
+	            target.val='';
+
+	        } else { // non residente
+	            target.style.display = "block";
+	        }
+	    }
+
+			$(document).ready(function(){
+
+			    //mostro o nascondo i campi  a seconda se nido o materna
+					fasciascuola_sel=$('#id_pr_fascia_asilo').val();
+					show_campi_xfascia(fasciascuola_sel);
+
+					residenteSN=$('#id_so_flag_residente').val();
+					showhide_domicilio(residenteSN);
+
+			    $("#id_pr_fascia_asilo").change(function(){
+						fasciascuola_sel=$('#id_pr_fascia_asilo').val();
+						show_campi_xfascia(fasciascuola_sel);
+			    });
+
+					$("#id_so_flag_residente").change(function(){
+							residenteSN=$('#id_so_flag_residente').val();
+							showhide_domicilio(residenteSN);
+					});
+			});
+		</script>
 		{% endblock extra_js %}
 		<div class="row">
 
 	</div>
 		<div class="row">
-		 <div class="col-md-12" style="padding-left:65px;padding-top:10px;">
-			
+		 <div class="col-md-12" style="padding-left:55px;padding-top:10px;width:80%;">
+
         	{% crispy form %}
     	 </div>
       </div>
