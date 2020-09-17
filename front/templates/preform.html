@@ -1,0 +1,29 @@
+{% extends "baseBootstrap4.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+
+{% block content %}
+	{% block extra_js %}
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+		{% endblock extra_js %}
+		<div class="row">
+		<div class="panel-heading pagetitlehome titolopagina" style="padding-top:10px;padding-left: 105px;">
+			<p>
+				Riempire tutti i campi sottostanti per l'identificazione dell'intestatario delle ricevute<br> e la verifica dei requisiti
+				per l'inserimento in graduatoria per l'erogazione di buoni Miur per nidi o materne.
+			</p>
+			<p>Se l'intestatario deve richiedere il buono per più figli, ripeta la procedura per ciascun minore.</p>
+		</div>
+	</div>
+		<div class="row">
+		 <div class="col-md-6" style="padding-left:105px;padding-top:30px;">
+
+        	{% crispy form %}
+    	 </div>
+      </div>
+
+  {% endblock  %}

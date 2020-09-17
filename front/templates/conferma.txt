@@ -1,6 +1,6 @@
     
     
-    Abbiamo registrato la sua Richiesta di inserimento in graduatoria per l'erogazione di buoni scuola per scuole d'infanzia con numero pratica: 2020/{{ id }})
+    Abbiamo registrato la sua Richiesta di inserimento in graduatoria per l'erogazione di buoni Miur per nidi materne con numero pratica: 2020/{{ id }})
 	
 	Gli aventi diritto riceveranno successivamente comunicazione dell'erogazione del buono.
 
