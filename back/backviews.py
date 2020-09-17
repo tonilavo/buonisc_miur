@@ -30,19 +30,7 @@ def preform_edit(request, id):
 # Legenda degli stati
 #	stato = 5 per indicare annullata per dati DSU errati
 #   stato = 6 per indicare annullata per doppio inserimento senza comunicazione
-@login_required()
-def preform_annulla(request, id):
 
-
-	#annulla la richiesta per dati DSU errati e manda una comunicazione all'utente
-    try:
-        rec=Ingressi.objects.get(pk=id)
-    except ObjectDoesNotExist:
-            raise Http404('Record inesistente')
-    send_annullamento_msg(id)
-    html_text = '<div style="margin-left: 25px; margin-top:200px"><h4><p>Annullamento effettuato per utente con CF:'+rec.codice_fiscale+ ' email:'+ rec.email + '</p></h4>'
-    html_text = html_text + '<br><br>&nbsp;&nbsp;&nbsp;<a href="/ingressilist'+'">Indietro</a></p>'
-    return HttpResponse(html_text)
 
 @login_required()
 def preform_del(request, id):
@@ -118,15 +106,6 @@ def updateB_domanda(request, id):
 			if domandaform.so_risc_diretta == 'S':
 						domandaform.so_banca_iban=''
 
-			#riempie i dati mancanti
-			#valori da campi non db a campi db
-
-			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
-
-			asilo_cod=form.cleaned_data['selasilo']
-			asilorec=Asili.objects.get(pk=asilo_cod)
-			domandaform.pr_asilo = asilorec
-
 			domandaform.save()
 
 			#rifacciamo vedere i dati in formato lettura
@@ -145,7 +124,6 @@ def del_domanda(request, id):
 
 @login_required()
 def riapri_domanda(request, id):
-
 	rec= Domande.objects.get(pk=id)
 	rec.pr_stato=0
 	rec.save()
@@ -153,7 +131,6 @@ def riapri_domanda(request, id):
 
 @login_required()
 def conferma_domanda(request, id):
-
 	rec= Domande.objects.get(pk=id)
 	if rec.pr_stato == 1:
 		rec.pr_stato=2
@@ -190,12 +167,9 @@ def resend_email(request):
 
 @login_required()
 def reviewB_domanda(request, id):
-
-
 	rec= Domande.objects.get(pk=id)
 
-	asilorec=Asili.objects.get(pk=rec.pr_asilo.id)
-	context = {'data': rec, 'asilo': asilorec.nome, 'id': id}
+	context = {'data': rec, 'id': id}
 
     # visualizzo anche gli allegati se ci sono
 	photos_list = Allegati.objects.filter(domanda_num = id)
@@ -225,10 +199,10 @@ class DomandeViewSet(viewsets.ModelViewSet):
 class DomandeAdminViewSet(viewsets.ModelViewSet):
     queryset = Domande.objects.all()
     serializer_class = AdminDomandeSerializer
+
 class AllegatiViewSet(viewsets.ModelViewSet):
     queryset = Allegati.objects.all().order_by('domanda_num')
     serializer_class = AllegatiSerializer
-
 
 
 @login_required()
@@ -242,7 +216,7 @@ def uploadb_file(request, id):
 			if form.is_valid():
 				rec_allegato = {}
 				rec_allegato['domanda_num'] = id
-				rec_allegato['file'] = 'zazza' + form.cleaned_data['file']
+				rec_allegato['file'] = 'all' + form.cleaned_data['file']
 				rec_allegato['descrizione'] = form.cleaned_data['descrizione']
 				Allegati.objects.create(**rec_allegato)
 
