@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from django.forms import ModelForm, Select, Textarea, HiddenInput
 from crispy_forms.bootstrap import InlineRadios
 from crispy_forms.layout import *
+from bootstrap_datepicker_plus import DatePickerInput
 #from codicefiscale import isvalid as isvalid_cf, build as build_cf
 from codicefiscale import codicefiscale
 import re, datetime
@@ -27,7 +28,7 @@ SEX_CHOICES = (
 
 RISC_CHOICES = (
     ('S', 'Per cassa'),
-    ('N', 'Tramite banca')
+    ('N', 'CC bancario')
 )
 SN_CHOICES = (
     (1, 'Si'),
@@ -35,18 +36,14 @@ SN_CHOICES = (
 )
 FASCIAASILO_CHOICES = (
     (None, '----'),
-    ('N', 'Nido'),
-    ('M', 'Materna'),
+    ('N', 'Nido (0-3 anni)'),
+    ('M', 'Materna (3-6 anni)'),
 )
 
 TIPOASILO_CHOICES = (
     (None, '----'),
     ('C', 'Comunale'),
     ('P', 'Di privati'),
-)
-
-ASILO_CHOICES = (
-    (None, '----'),
 )
 
 
@@ -57,26 +54,29 @@ class Domandeform(ModelForm):
         fields = '__all__'
 
         labels = {'pr_data_richiesta': 'Data inserimento', 'so_cognome': 'Cognome', 'so_nome': 'Nome',
-                  'so_sesso': 'Sesso', 'so_nasc_dt': 'Data di nascita',
+                  'so_sesso': 'Sesso', 'so_nasc_dt': 'Data di nascita', 'pr_data_isee_inps': 'Data DSU',
                   'so_nasc_com': 'Comune di nascita', 'so_cod_fis': 'Cod.fiscale ', 'so_banca_iban': 'IBAN',
                   'pr_prot_isee_inps': 'num.protocollo DSU', 'pr_isee': 'Isee', 'so_email': 'Email',
-                  'so_domicilio': 'Domicilio', 'so_flag_residente': 'Residente nel Comune di Grosseto',
+                  'so_domicilio': 'Domicilio', 'so_flag_residente': 'Residente nel Comune',
                   'so_risc_diretta': 'Modalità di riscossione', 'pr_cognome': 'Cognome', 'pr_nome': 'Nome',
-                  'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia asilo',
-                  'pr_tipo_asilo': 'Comunale/Privato', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
-                  'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Imp.riscosso Buoni scuola',
-                  'pr_imp_buoniinps': 'Imp.riscosso Buoni Inps', 'pr_spesa_totale': 'Spesa totale',
+                  'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia scuola',
+                  'pr_tipo_asilo': 'Comunale/ di privati', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
+                  'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Importo buoni scuola',
+                  'pr_imp_buoniinps': 'Importo buoni Inps', 'pr_spesa_totale': 'Spesa totale',
                   'pr_num_tot_ricevute': 'Numero', 'pr_importo_tot_ricevute': 'Importo totale'
                   }
+        localized_fields = '__all__'
 
-        widgets = {'so_risc_diretta': Select(choices=RISC_CHOICES), 'pr_tipo_asilo': forms.HiddenInput,
-                   'pr_asilo': forms.HiddenInput,
+        widgets = {'so_risc_diretta': Select(choices=RISC_CHOICES), 'pr_fascia_asilo': Select(choices=FASCIAASILO_CHOICES),
                    'so_sesso': Select(choices=SEX_CHOICES), 'pr_sesso': Select(choices=SEX_CHOICES),
-                   'pr_prot_isee_inps': forms.HiddenInput,
+                   'pr_tipo_asilo': Select(choices=TIPOASILO_CHOICES),
                    'pr_nasc_dt': forms.SelectDateWidget(years=[date.today().year - i - 3 for i in range(5)]),
-                   'pr_data_isee_inps': forms.HiddenInput, 'token': forms.HiddenInput, 'pr_stato': forms.HiddenInput,
+                   'token': forms.HiddenInput, 'pr_stato': forms.HiddenInput,
                    'so_flag_residente': Select(choices=SN_CHOICES),
-
+                   'pr_isee': forms.TextInput( attrs={'class': 'form-control'}), 'pr_spesa_mese': forms.TextInput( attrs={'class': 'form-control', 'localization': True}),
+                   'pr_spesa_totale':forms.TextInput( attrs={'class': 'form-control', 'localization': True}), 'pr_num_tot_ricevute': forms.TextInput( attrs={'class': 'form-control'}),
+                    'pr_importo_tot_ricevute': forms.TextInput( attrs={'class': 'form-control'}), 'pr_imp_buoniscuola':forms.TextInput( attrs={'class': 'form-control'}),
+                    'pr_imp_buoniinps':forms.TextInput( attrs={'class': 'form-control'}), 'pr_data_isee_inps': DatePickerInput(format='%d/%m/%Y', options={'locale': 'it'})
                    }
 
 
@@ -87,67 +87,76 @@ class CrispyDomandaForm(Domandeform):
         super().__init__(*args, **kwargs)
 
         testo_init = '<div class="panel-heading pagetitlehome titolopagina" style="padding-left: 30px;padding-top:60px;padding-bottom:30px;">'
-        testo_init += "<p><b>Riempire tutti i campi sottostanti per l'assegnazione di buoni scuola per scuole dell'infanzia</b>\
+        testo_init += "<p><b>Riempire tutti i campi sottostanti per l'assegnazione di buoni Miur per nidi/materne</b>\
                             </p>I campi con asterisco sono obbligatori</div>"
         self.helper = FormHelper()
         self.helper.layout = Layout(
             HTML(testo_init),
-            Row(
-                Column('pr_data_richiesta', css_class='form-control disabled col-md-4 mb-2',
-                       style='padding-right:20px;'),
-                css_class='form-row col-12', style='padding-bottom:40px;padding-left:20px;'
-            ),
-            Fieldset("Richiedente",
+            Fieldset("Dati anagrafici del richiedente",
                      Row(
-                     Column('so_cod_fis', css_class='form-control disabled col-md-4 mb-2', style='padding-right:20px;'),
-                     Column('pr_isee', css_class='form-control   col-md-2 mb-6', style='background-color: gray10;'),
-                     Column('so_email', css_class='read-only form-control col-sm-4 mb-6'),
-                     css_class='form-row col-12', style='padding-bottom:40px;padding-left:20px;'
+                     Column('pr_data_richiesta', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                     Column('token', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                     css_class='form-row col-md-6', style='padding-bottom:40px;'
+                     ),
+                     Row(
+                     Column('so_cod_fis', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                     Column('so_email', css_class='read-only form-control col-md-6 mb-6'),
+                     css_class='form-row col-md-8', style='padding-bottom:40px;'
                      ),
                     Row(
                         Column('so_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
                         Column('so_nome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
-                        Column('so_sesso', css_class='form-control col-md-2 mb-2'),
-                        css_class='form-row col-6', style='padding-bottom:60px'
+
+                        css_class='form-row col-md-8', style='padding-bottom:60px'
                     ),
                     Row(
+                        Column('so_sesso', css_class='form-control col-md-2 mb-2'),
                         Column('so_nasc_dt', css_class='form-control col-md-4 mb-2', style='padding-right:70px;'),
-                        Column('so_nasc_com', css_class='form-control col-md-4 mb-2'),
-                        css_class='form-row col-6', style='padding-bottom:100px'
+                        Column('so_nasc_com', css_class='form-control col-md-6 mb-2'),
+                        css_class='form-row col-8', style='padding-bottom:80px'
                     ),
                     Row(
                         Column('so_flag_residente', css_class='form-control col-md-2 mb-6'),
                         Div(
                             Field('so_domicilio'),
-                            css_id='domicilio'),
-                        css_class='form-row col-6', style='padding-bottom:130px'
+                            css_id='domicilio', style="width:800px;"),
+                        css_class='form-row col-md-8', style='padding-bottom:70px'
                     )
             ),
             Fieldset('Dati  anagrafici del  minore',
                  Row(
-                     Column('pr_codfiscale', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
                      Column('pr_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
                      Column('pr_nome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
-                     css_class='form-row col-6', style='padding-bottom:60px'
+                     Column('pr_codfiscale', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
+                     css_class='form-row col-md-8', style='padding-bottom:60px'
                  ),
                  Row(
                      Column('pr_nasc_dt', css_class='form-control col-md-4 mb-2'),
-                     Column('pr_nasc_com', css_class='form-control col-md-4 mb-2'),
+                     Column('pr_nasc_com', css_class='form-control col-md-4 mb-2', style='padding-right:50px'),
                      Column('pr_sesso', css_class='form-control col-md-2 mb-2'),
-                     css_class='form-row  col-6', style='padding-bottom:100px;'
-                 )
-                 ),
+                     css_class='form-row  col-md-12', style='padding-bottom:60px;'
+                 )),
             Fieldset('Dati di frequenza',
                  Row(
                      Column('pr_fascia_asilo', css_class='form-control col-md-4 mb-4'),
-                     Column('pr_tipo_asilo', css_class='form-control col-md-4 mb-4'),
-                     Column('pr_spesa_mese', css_class='form-control col-md-4 mb-2', style='padding-left:30px;'),
-                     Column('pr_spesa_totale', css_class='form-control col-md-2 mb-4'),
-                     Column('pr_imp_buoniscuola', css_class='form-control col-md-2 mb-4'),
-                     Column('pr_imp_buoniinps', css_class='form-control col-md-2 mb-4'),
-                     css_class='form-row  col-6', style='padding-top:10px;padding-bottom:15px;'
+                     Column('pr_tipo_asilo', css_class='form-control col-md-2 mb-4'),
+                     Column('pr_imp_buoniscuola', css_class='form-control col-md-6 mb-4', style='padding-right:30px;'),
+                     css_class='form-row  col-md-8', style='padding-top:10px;padding-bottom:50px;'
                  ),
+                 Fieldset('',
+                 Row(
+                     Column('pr_imp_buoniinps', css_class='form-control col-md-2 mb-4', style='padding-right:50px'),
+                     Column('pr_isee', css_class='form-control   col-md-2 mb-6'),
+                     Column('pr_prot_isee_inps', css_class='form-control  col-md-4 mb-6'),
+                     Column('pr_data_isee_inps', css_class='form-control  col-md-2 mb-6'),
+                     css_class='form-row col-md-12', style='padding-bottom:50px;'
+                     ), css_id='campi_nido'
                  ),
+                 Row(
+                     Column('pr_spesa_mese', css_class='form-control col-md-4 mb-2'),
+                     Column('pr_spesa_totale', css_class='form-control col-md-4 mb-4'),
+                     css_class='form-row  col-6', style='padding-top:10px;padding-bottom:50px;'
+                 ),                 ),
                 Div(
                     Fieldset('Ricevute allegate',
                      Row(
@@ -160,28 +169,18 @@ class CrispyDomandaForm(Domandeform):
             ),
             Fieldset('Dati per la riscossione',
                  Row(
-                     Column('so_risc_diretta', css_class='form-control col-md-0 mb-2'),
-                     css_class='form-row  col-8', style='padding-bottom:30px;'
-                 ),
-                 Row(
-                     Column('so_banca_iban', css_class='col-md-4', css_id="id_iban"),
-                     css_class='form-row  col-8', style='padding-bottom:30px; '
+                     Column('so_risc_diretta', css_class='form-control col-md-2 mb-2'),
+                     Column('so_banca_iban', css_class='col-md-6', css_id="id_iban"),
+                     css_class='form-row  col-md-8', style='padding-bottom:30px; '
                  )
             ),
             Row(
                 HTML(
                     '<div class="g-recaptcha" data-sitekey="6LdTmPUUAAAAAJHs1p_cn9ME_qOOw5264feotBNr" style="padding-bottom:60px;padding-right:40px;"></div>'),
                 Column(Submit('submit', 'Salva'), css_class='form-control col-md-6 mb-6'),
-                css_class='form-row', style='padding-top:60px;padding-bottom:30px;'
+                css_class='form-row ', style='padding-top:60px;padding-bottom:30px;'
             ),
-            Row(Column(
-                Field('pr_tipo_asilo'),
-                Field('pr_asilo'),
-                Field('pr_prot_isee_inps'),
-                Field('pr_data_isee_inps'),
-                Field('token')
-            ),
-        ))
+        )
 
     def clean(self):
 
@@ -229,10 +228,10 @@ class CrispyDomandaForm(Domandeform):
             if domande_alunno.count() > 1:
                 if not self.instance.pk:  # siamo in inserimento
                     raise forms.ValidationError(
-                        'Già presente in archivio una richiesta di buoni scuola per minore con cod.fiscale:' + codice_fiscale)
+                        'Già presente in archivio una richiesta di buoni Miur per minore con cod.fiscale:' + codice_fiscale)
                 elif self.instance.pk != domande_alunno[0].id:  # in fase di modifica
                     raise forms.ValidationError(
-                        'Già presente in archivio una richiesta di buoni scuola per minore con cod.fiscale:' + codice_fiscale)
+                        'Già presente in archivio una richiesta di buoni Miur per minore con cod.fiscale:' + codice_fiscale)
 
         # controllo valid. data di nascita
         if data.get('pr_nasc_dt'):
@@ -245,21 +244,17 @@ class CrispyDomandaForm(Domandeform):
         if data.get('so_risc_diretta') == 'N':
             if not data.get('so_banca_iban'):
                 raise forms.ValidationError("Indicare l'IBAN dell'intestatario")
-        # controlli sui dati frequenza
-        if not data.get('pr_mesi_frequenza') or data.get('pr_mesi_frequenza') == 0 or data.get(
-                'pr_mesi_frequenza') > 12:
-            raise forms.ValidationError(
-                "Indicare il numero di mesi di frequenza della scuola dell'infanzia (valore da 1 a 12)")
 
-        if data.get('seltipoasilo') == 'P':
-            if not data.get('pr_num_tot_ricevute'):
-                raise forms.ValidationError(
-                    "Indicare il numero delle ricevute da allegare per la frequenza della scuola dell'infanzia privata")
-            if not data.get('pr_importo_tot_ricevute'):
-                raise forms.ValidationError(
-                    "Indicare la somma totale delle ricevute da allegare per la frequenza della scuola dell'infanzia privata")
+        if not data.get('pr_num_tot_ricevute') or not data.get('pr_importo_tot_ricevute'):
+            raise forms.ValidationError("Indicare il numero delle ricevute di spesa da allegare con il loro importo complessivo.")
+        elif data.get('pr_fascia_asilo') == 'N':
+            if data.get('pr_num_tot_ricevute') > 4:
+                raise forms.ValidationError("Indicare un numero massimo di 4 ricevute allegate per il periodo gennaio aprile 2020.")
+        else: # fascia materne
+            if data.get('pr_num_tot_ricevute') > 8:
+                raise forms.ValidationError("Indicare al massimo un numero di 8 ricevute allegate  per il periodo settembre 2019 - aprile 2020.")
+
         # controlli sui dati domicilio per non residenti
-        print("controllo dati residenza:" + str(data.get('so_flag_residente')))
         if data.get('so_flag_residente') == 0:
             if not (data.get('so_domicilio')):
                 raise forms.ValidationError("Obbligatorio, per in non residenti, indicare il domicilio")
@@ -276,8 +271,34 @@ class CrispyDomandaForm(Domandeform):
         data['so_flag_residente'] = data.get('so_flag_residente')
         data['pr_stato'] = 0
 
-        return data
+        if data.get('pr_fascia_asilo')=='N': # controlli per fascia nido
 
+            # obbligatori tutti i dati della DSU
+            if not  (data.get('pr_prot_isee_inps') and  data.get('pr_data_isee_inps')  and  data.get('pr_isee')):
+                raise forms.ValidationError("Riempire tutti i campi dell'attestazione DSU" )
+
+            #controllo protocollo INPS
+            currdata = timezone.now()
+            curranno =  currdata.strftime("%Y")
+
+            protdsu=data.get('pr_prot_isee_inps').upper()
+            prefix = 'INPS-ISEE-'
+            prima_parte_curranno  =  prefix + curranno  + '-'
+            prima_parte_annoprec  =  prefix + str(int(curranno)-1)  + '-'
+
+            if ((protdsu[0:15] != prima_parte_curranno)  and (protdsu[0:15] != prima_parte_annoprec))  or  (protdsu[24:27] != '-00')  or (protdsu == prefix + curranno  +'-XXXXXXXXX-00'):
+                #or (protdsu == 'INPS-ISEE-' +  curranno + '-XXXXXXXXX-00')
+                raise forms.ValidationError('Inserire un numero protocollo DSU nel formato INPS-ISEE-anno-XXXXXXXXX-00 con anno '+ str(int(curranno)-1) + ' oppure ' + curranno)
+
+            data['pr_prot_isee_inps'] = protdsu
+            # controlli sulla data DSU
+            datadsu=data.get('pr_data_isee_inps')
+            if datadsu < datetime.date(int(curranno)-1, 1, 1):
+                raise forms.ValidationError("Ammesse solo date dal I gennaio " + str(int(curranno)-1))
+            elif datadsu > datetime.date.today():
+                raise forms.ValidationError("Ammesse solo date passate")
+
+        return data
 
 class PhotoForm(forms.Form):
     descrizione = forms.CharField(label="Descrizione dell'allegato (es. ricevuta dicembre)", max_length=65,
@@ -302,28 +323,3 @@ class PhotoForm(forms.Form):
         if not data.get("descrizione"):
             raise forms.ValidationError("Inserire una descrizione dell'allegato che stiamo caricando")
         return data
-
-
-class TestJsform(forms.Form):
-    seltipoasilo = forms.CharField(max_length=1, label="Tipo di scuola dell'infanzia",
-                                   widget=Select(choices=TIPOASILO_CHOICES), initial='')
-    selasilo = forms.CharField(max_length=100, label='Denominazione', widget=Select(choices=ASILO_CHOICES))
-
-
-class CrispyTestJsform(TestJsform):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        testo_init = '<div class="panel-heading pagetitlehome titolopagina" style="padding-left: 30px;padding-top:60px;padding-bottom:30px;">'
-        testo_init += "<p><b>Riempire tutti i campi sottostanti per l'assegnazione di buoni scuola per scuole dell'infanzia</b>\
-                            </p>I campi con asterisco sono obbligatori</div>"
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            HTML(testo_init),
-            Fieldset("Scuola d'infanzia",
-                     Row(
-                         Column('seltipoasilo', css_class='form-control   col-md-2 mb-6'),
-                         Column('selasilo', css_class='form-control disabled col-sm-4 mb-2',
-                                style='padding-right:60px;'),
-                     ),
-                     ))
