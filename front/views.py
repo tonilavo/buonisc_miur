@@ -168,7 +168,6 @@ def update_domanda(request, id):
 		form = CrispyDomandaForm(instance=rec)
 		if settings.DEBUG:
 			print("form in GET")
-			print(form)
 	else:
 		# Post dopo premuto Salva
 		form = CrispyDomandaForm(request.POST, instance=rec)
@@ -430,6 +429,7 @@ def domandatest(request):
 		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
 		domanda_data['so_sesso'] = 'M'
 		domanda_data['so_email'] = rec_prec.email
+		domanda_data['so_tel'] = rec_prec.tel
 		domanda_data['pr_cognome'] = 'BARGAGLI'
 		domanda_data['pr_nome'] = 'ARIEL'
 		domanda_data['pr_sesso'] = 'F'

@@ -46,6 +46,7 @@ class Domande(models.Model):
     pr_data_isee_inps = models.DateField(blank=True, null=True)
     pr_spesa_mese = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
     pr_spesa_totale = models.DecimalField(max_digits=10, decimal_places=2, blank=False, null=False)
+    pr_mesi_frequenza = models.SmallIntegerField(blank=False, null=False, default=0)
     pr_imp_buoniscuola = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     pr_imp_buoniinps = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     pr_num_tot_ricevute = models.SmallIntegerField(blank=True, null=True, default=0)

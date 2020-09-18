@@ -56,12 +56,13 @@ class Domandeform(ModelForm):
         labels = {'pr_data_richiesta': 'Data inserimento', 'so_cognome': 'Cognome', 'so_nome': 'Nome',
                   'so_sesso': 'Sesso', 'so_nasc_dt': 'Data di nascita', 'pr_data_isee_inps': 'Data DSU',
                   'so_nasc_com': 'Comune di nascita', 'so_cod_fis': 'Cod.fiscale ', 'so_banca_iban': 'IBAN',
-                  'pr_prot_isee_inps': 'num.protocollo DSU', 'pr_isee': 'Isee', 'so_email': 'Email',
+                  'pr_prot_isee_inps': 'num.protocollo DSU', 'pr_isee': 'Isee', 'so_email': 'Email', 'so_tel':'Telefono',
                   'so_domicilio': 'Domicilio', 'so_flag_residente': 'Residente nel Comune',
                   'so_risc_diretta': 'Modalità di riscossione', 'pr_cognome': 'Cognome', 'pr_nome': 'Nome',
                   'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia scuola',
                   'pr_tipo_asilo': 'Comunale/ di privati', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
                   'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Importo buoni scuola',
+                  'pr_mesi_frequenza': 'Frequenza mesi num.',
                   'pr_imp_buoniinps': 'Importo buoni Inps', 'pr_spesa_totale': 'Spesa totale',
                   'pr_num_tot_ricevute': 'Numero', 'pr_importo_tot_ricevute': 'Importo totale'
                   }
@@ -93,16 +94,6 @@ class CrispyDomandaForm(Domandeform):
         self.helper.layout = Layout(
             HTML(testo_init),
             Fieldset("Dati anagrafici del richiedente",
-                     Row(
-                     Column('pr_data_richiesta', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
-                     Column('token', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
-                     css_class='form-row col-md-6', style='padding-bottom:40px;'
-                     ),
-                     Row(
-                     Column('so_cod_fis', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
-                     Column('so_email', css_class='read-only form-control col-md-6 mb-6'),
-                     css_class='form-row col-md-8', style='padding-bottom:40px;'
-                     ),
                     Row(
                         Column('so_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
                         Column('so_nome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
@@ -110,11 +101,17 @@ class CrispyDomandaForm(Domandeform):
                         css_class='form-row col-md-8', style='padding-bottom:60px'
                     ),
                     Row(
-                        Column('so_sesso', css_class='form-control col-md-2 mb-2'),
                         Column('so_nasc_dt', css_class='form-control col-md-4 mb-2', style='padding-right:70px;'),
-                        Column('so_nasc_com', css_class='form-control col-md-6 mb-2'),
+                        Column('so_nasc_com', css_class='form-control col-md-4 mb-2'),
+                        Column('so_sesso', css_class='form-control col-md-2 mb-2'),
                         css_class='form-row col-8', style='padding-bottom:80px'
                     ),
+                     Row(
+                     Column('so_cod_fis', css_class='form-control disabled col-md-2 mb-2', style='padding-right:50px;'),
+                     Column('so_tel', css_class='read-only form-control col-md-2 mb-6'),
+                     Column('so_email', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                     css_class='form-row col-md-12', style='padding-bottom:40px;'
+                     ),
                     Row(
                         Column('so_flag_residente', css_class='form-control col-md-2 mb-6'),
                         Div(
@@ -153,9 +150,10 @@ class CrispyDomandaForm(Domandeform):
                      ), css_id='campi_nido'
                  ),
                  Row(
+                    Column('pr_mesi_frequenza',  css_class='form-control col-md-4 mb-2'),
                      Column('pr_spesa_mese', css_class='form-control col-md-4 mb-2'),
                      Column('pr_spesa_totale', css_class='form-control col-md-4 mb-4'),
-                     css_class='form-row  col-6', style='padding-top:10px;padding-bottom:50px;'
+                     css_class='form-row  col-12', style='padding-top:10px;padding-bottom:50px;'
                  ),                 ),
                 Div(
                     Fieldset('Ricevute allegate',
@@ -180,6 +178,11 @@ class CrispyDomandaForm(Domandeform):
                 Column(Submit('submit', 'Salva'), css_class='form-control col-md-6 mb-6'),
                 css_class='form-row ', style='padding-top:60px;padding-bottom:30px;'
             ),
+            Row(
+                 Column('pr_data_richiesta', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                 Column('token', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
+                     css_class='form-row col-md-6', style='padding-bottom:40px;'
+             ),
         )
 
     def clean(self):
