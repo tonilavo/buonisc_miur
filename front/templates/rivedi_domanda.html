@@ -24,18 +24,14 @@
 
 				 <form  novalidate method="post" action=".">
 				 <div class="row" style="padding-bottom: 20px;">
-					 <div class="col-sm-2" >
-						 <label for="cf_richiedente" class="col-sm-2 col-form-label">Codice fiscale</label>
+					 <div class="col-md-4" >
+						 <label for="cf_richiedente" class="col-md-4 col-form-label">Cod.fiscale</label>
 						   <input type="text" readonly class="form-control-plaintext" id="id_so_cod" value="{{ data.so_cod_fis}}">
 					 </div>
 					 <div class="col-sm-2" >
-						<label for="email" class="col-sm-2 col-form-label">Email</label>
+						<label for="email" class="col-md-4 col-form-label">Email</label>
 						  <input type="text" readonly class="form-control-plaintext" id="id_so_email" value="{{ data.so_email}}">
 					</div>
-					 <div class="col-sm-2">
-						 <label for="isee" class="col-sm-0 col-form-label">Isee</label>
-						   <input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_isee }}">
-					 </div>
 				 </div>
 				 <div class="row" style="padding-bottom: 20px;" >
 					 <div class="col-sm-2" >
@@ -102,13 +98,17 @@
 				</div>
 				<h5>Spesa per la frequenza dal minore</h5>
 				<div class="row" style="padding-bottom: 30px;">
-							<div class="col-sm-2">
-								<label for="id_pr_mesi_frequenza" class="col-sm-6 col-form-label">Spesa mensile</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_spesa_mese }}">
+						<div class="col-sm-2">
+							<label for="id_pr_mesi_frequenza" class="col-sm-6 col-form-label">Mesi di frequenza</label>
+								<input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_mesi_frequenza }}">
 							</div>
 							<div class="col-sm-2">
-								<label for="id_pr_retta_mese" class="col-sm-6 col-form-label">Soesa complessiva</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_spesa_tot }}">
+								<label for="id_pr_spesa_mese" class="col-sm-6 col-form-label">Spesa mensile</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_mese" value="{{ data.pr_spesa_mese }}">
+							</div>
+							<div class="col-sm-2">
+								<label for="id_pr_spesa_totale" class="col-sm-6 col-form-label">Spesa complessiva</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_totale" value="{{ data.pr_spesa_totale }}">
 							</div>
 				</div>
 				{% if  data.pr_num_tot_ricevute %}

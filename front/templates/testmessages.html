@@ -1,0 +1,31 @@
+{% extends "baseBootstrap4.html" %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="it">
+{% if messages %}
+
+<ul class="messages">
+    {% for msg in messages %}
+    <li>
+        <div class="alert alert-{{msg.level_tag}}" role="alert">
+        {{msg.message}}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+
+{% endif %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12"  style="padding-left:250px;padding-top:100px;" >
+<h4>Conferma della sua domanda n.{{id}}</h4>
+</div></div>
+<div class="row">
+   <div class="col-md-6"  style="padding-left:80px; padding-top:80px;" >
+<p class="text-success .bg-secondary">Abbiamo registrato la sua richiesta di assegnazione di buoni scuola Miur per il rimborso parziale delle spese sostenute per la frequenza di nidi/materne.</p>
+<p class="text-success .bg-secondary">Nella casella di posta elettronica che ha indicato in domanda troverà un riepilogo dei dati inseriti.</p>
+<p class="text-success .bg-secondary">Il personale dei Servizi educativi esaminerà tutte le domande e stilerà una graduatoria, dalla quale gli aventi diritto riceveranno comunicazione circa l'erogazione del buono. </p>
+
+{% endblock %}
