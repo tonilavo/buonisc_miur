@@ -93,12 +93,8 @@ def updateB_domanda(request, id):
 
 	rec= Domande.objects.get(pk=id)
 
-	asilorec=Asili.objects.get(pk=rec.pr_asilo.id)
-
 	if request.method=='GET':
-		campi_nodb = {'seltipoasilo': rec.pr_tipo_asilo, 'selasilo': asilorec.id}
-
-		form =  CrispyDomandaForm( initial=campi_nodb, instance=rec)
+		form =  CrispyDomandaForm(instance=rec)
 	else:
 		form = CrispyDomandaForm(request.POST, instance=rec)
 		if form.is_valid():
