@@ -14,9 +14,9 @@ $('*[data-confirm="true"]').on('click', function() {
 
     <script>
         $(document).ready(
-            function () {                        
+            function () {
                var table = $('#TblRichieste').DataTable(
-                {     
+                {
                   "serverSide": true,
                   "ajax": "/back/api/domande/?format=datatables",
                   "paging":true,
@@ -30,38 +30,38 @@ $('*[data-confirm="true"]').on('click', function() {
                                   else
                                       return '';
                               }
-                          }, 
+                          },
                           {data: "so_cod_fis"},
                           {data: "ut_tel", searchable:false, sortable:false},
                           {data: "pr_isee"},
-                          {data: "so_email"},  
-                          {data: "pr_cognome"},  
-                          {data: "pr_nome"},                               
+                          {data: "so_email"},
+                          {data: "pr_cognome"},
+                          {data: "pr_nome"},
                           {data: "pr_codfiscale"},
                           {data: 'pr_tipo_asilo'},
-                          {data: "stato_parlato", searchable:false, sortable:false} , 
-                          {data: "link_edit", searchable:false, sortable:false} ,    
+                          {data: "stato_parlato", searchable:false, sortable:false} ,
+                          {data: "link_edit", searchable:false, sortable:false} ,
                           {data: "link_conferma", searchable:false, sortable:false} ,
                           {data: "link_del", searchable:false, sortable:false} ,
-                          {data: "link_riapri", searchable:false, sortable:false} ,  
-                          {data: "link_rifiuta", searchable:false, sortable:false} ,     
+                          {data: "link_riapri", searchable:false, sortable:false} ,
+                          {data: "link_rifiuta", searchable:false, sortable:false} ,
                     ],
-                    "language": 
+                    "language":
                         {
                         "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Italian.json"
                         }
             }
-            );	
+            );
             //imposta il reloading ogni 2 min
             setInterval( function () {
                           table.ajax.reload();
-            }, 120000 );	
+            }, 120000 );
 
 
 
  });
-    </script>	
-   
+    </script>
+
     <script type="text/javascript">
          <!--
             function getConfirmation(id){
@@ -77,7 +77,7 @@ $('*[data-confirm="true"]').on('click', function() {
             }
          //-->
     </script>
-{% endblock extra_js %} 
+{% endblock extra_js %}
 <!--div class="row" style="padding-left: 400px;"><a href="/servizio" class="btn btn-lg btn-primary " role="button" aria-disabled="true">Menu di servizio</a></div-->
 <div class="row" style="padding-left: 400px;"><h4>Domande Web</h4></div>
 <div class="row">
@@ -95,7 +95,7 @@ $('*[data-confirm="true"]').on('click', function() {
                   <th style="text-align: center">Cogn.minore</th>
                   <th style="text-align: center">Nome minore</th>
                   <th style="text-align: center">CF minore</th>
-                  <th style="text-align: center">Tipo sc.</th>
+                  <th style="text-align: center">Comunali/Privati</th>
                   <th style="text-align: center">Stato</th>
                   <th style="text-align: center"></th>
                   <th style="text-align: center"></th>

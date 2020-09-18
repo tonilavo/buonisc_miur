@@ -16,9 +16,9 @@ $('*[data-confirm="true"]').on('click', function() {
             $('*[data-confirm="true"]').on('click', function() {
                     return confirm("Confermi l'operazione?");
             });
-            
+
             var table = $('#TblRichieste').DataTable(
-            {     
+            {
                   "serverSide": true,
                   "ajax": "/back/api/ingressi/?format=datatables",
                   "paging":true,
@@ -32,42 +32,32 @@ $('*[data-confirm="true"]').on('click', function() {
                                   else
                                       return '';
                               }
-                          }, 
-                          {data: "codice_fiscale"},  
-                          {data: "codfis_bimbo"}, 
-                          {data: "isee"},                               
-                          {data: "protocollo_inps"},
-                          {data: "data_dsu",
-                              "render": function ( data ) {
-                                  if (data)
-                                      return moment(data).format('DD/MM/YY');
-                                  else
-                                      return '';
-                              }
-                          }, 
+                          },
+                          {data: "codice_fiscale"},
+                          {data: "codfis_bimbo"},
                           {data: "email"},
                           {data: "tel"},
-                          {data: "stato_parlato", sortable: false, searchable: false},  
-                          {data: "link_edit", sortable: false, searchable: false},    
+                          {data: "stato_parlato", sortable: false, searchable: false},
+                          {data: "link_edit", sortable: false, searchable: false},
                           {data: "link_email", sortable: false, searchable: false},
 
                           {data: "link_annulla", sortable: false, searchable: false},
                           {data: "link_del", sortable: false, searchable: false} ,
-                          {data: "link_domanda", sortable: false, searchable: false}                 
+                          {data: "link_domanda", sortable: false, searchable: false}
                   ],
-                  "language": 
+                  "language":
                     {
                       "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Italian.json"
                     }
-            });		
+            });
             //imposta il reloading ogni 30 secondi
             setInterval( function () {
                           table.ajax.reload();
-            }, 1200000 );	
+            }, 1200000 );
 	      });
 
 //$.fn.dataTable.ext.errMode = 'throw';
-    </script>	
+    </script>
     <script type="text/javascript">
          <!--
             function getConfirmation(id){
@@ -83,7 +73,7 @@ $('*[data-confirm="true"]').on('click', function() {
             }
          //-->
     </script>
-{% endblock extra_js %} 
+{% endblock extra_js %}
 <!--div class="row" style="padding-left: 400px;"><a href="/servizio" class="btn btn-lg btn-primary " role="button" aria-disabled="true">Menu di servizio</a></div-->
 <div class="row" style="padding-left: 400px;"><h4>Ingressi Web</h4></div>
 <div class="row">
@@ -95,17 +85,14 @@ $('*[data-confirm="true"]').on('click', function() {
                   <th style="text-align: center">Data richiesta</th>
                   <th style="text-align: center">CF intestatario</th>
                   <th style="text-align: center">CF bimbo</th>
-                  <th style="text-align: center">Isee</th>
-                  <th style="text-align: center">Protocollo DSU</th>
-                  <th style="text-align: center">Data DSU</th>
                   <th style="text-align: center">Email</th>
                   <th style="text-align: center">Tel</th>
                   <th style="text-align: center">Stato</th>
                   <th style="text-align: center"></th>
                   <th style="text-align: center"></th>
                   <th style="text-align: center"></th>
-                  <th style="text-align: center"></th>  
-                  <th style="text-align: center">domanda</th>                 
+                  <th style="text-align: center"></th>
+                  <th style="text-align: center">domanda</th>
                 </tr>
             </thead>
         </table>
