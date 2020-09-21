@@ -103,14 +103,13 @@
 
 				<h5>Dati di frequenza del minore</h5>
 				<div class="row" style="padding-bottom: 30px;">
-							<div class="col-sm-6">
+							<div class="col-sm-4">
 								<label for="id_pr_fascia_asilo" class="col-sm-6 col-form-label">Nido/materna</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{{ pr_fascia_asilo }}">
-							</div>
-							<div class="col-sm-6">
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{{ data.pr_fascia_asilo }}">
+
 								<label for="id_pr_tipo_asilo" class="col-sm-6 col-form-label">Privato/Comunale</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{{ pr_tipo_asilo }}">
-							</div>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{{ data.pr_tipo_asilo }}">
+
 				</div>
 				<div class="row" style="padding-bottom: 30px;">
 							<div class="col-sm-2">
@@ -118,13 +117,16 @@
 								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_mesi_frequenza }}">
 							</div>
 							<div class="col-sm-2">
-								<label for="id_pr_retta_mese" class="col-sm-6 col-form-label">Retta mensile</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_retta_mese" value="{{ data.pr_retta_mese }}">
+								<label for="id_pr_spesa_mese" class="col-sm-6 col-form-label">Spesa mensile</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_mese" value="{{ data.pr_spesa_mese }}">
+							</div>
+							<div class="col-sm-2">
+								<label for="id_pr_spesa_totale" class="col-sm-6 col-form-label">Spesa complessiva</label>
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_totale" value="{{ data.pr_spesa_totale }}">
 							</div>
 				</div>
 
 				{% if  data.pr_tipo_asilo  == 'P' %}
-
 					<div class="row" style="padding-bottom: 30px;">
 							<div class="col-sm-2">
 								<label for="id_pr_num_tot_ricevute" class="col-sm-6 col-form-label">Num.ricevute allegate</label>
@@ -135,7 +137,6 @@
 								  <input type="text" readonly class="form-control-plaintext" id="id_pr_importo_tot_ricevute" value="{{ data.pr_importo_tot_ricevute }}">
 							</div>
 					</div>
-
 				{% endif %}
 
 				{% if  data.pr_isee %}
