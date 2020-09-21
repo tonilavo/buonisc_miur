@@ -1,0 +1,74 @@
+{% extends 'baseBootstrap4.html' %}
+{% load static %}
+
+{% block title %}Caricamento allegati{% endblock %}
+
+{% block content %}
+
+{% block extra_js %}
+      <script type="text/javascript">
+         <!--
+            function getConfirmation(){
+               var retVal = confirm("Confermi di voler eliminare tutti gli allegati?");
+               if( retVal == true ){
+                  return true;
+               }
+               else{
+
+                  event.preventDefault();
+                  return false;
+               }
+            }
+         //-->
+      </script>
+{% endblock %}
+
+{% if form %}
+    <div class="row" style="padding-left:32px; padding-top: 30px;">
+    <div class="col-md-2">
+        <form action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}{{ form.instance.attachments }}
+                
+    </div>
+    </div>
+    <div class="row"  style="padding-left:40px;padding-top:20px; ">
+    <div class="col-md-2" style="padding-right:20px;">
+        <button type="submit" name="carica" class="btn  btn-success">Carica il file</button>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-success" href="{{ url_ritorno }}" role="button">Ritorna alla domanda</a>
+    </div>
+    <div class="col-md-2" style="padding-right:50px;" >
+        <a class="btn btn-danger" name="clear" href="{{ url_deleteall }}" onclick="getConfirmation();" role="button">Rimuovi tutti gli allegati</a>
+    </div>
+    
+
+    </div>
+
+{% endif %}
+
+{% if photos %}
+<div style="padding-top:90px;padding-left:102px;">
+    <h5>Allegati caricati</h5>
+    <table id="gallery" class="table table-bordered"  style="width:50%;">
+        <thead>
+        <tr>
+            <th style="text-align:center:width:50%;">Descrizione</th>
+            <th style="text-align:center;width:50%;">Nome file</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for photo in photos %}
+            {% if photo.file.url %}
+            <tr>
+            <td>{{ photo.descrizione }}</td>
+            <td><a href="{{ photo.file.url }}" target="_blank">{{ photo.file.name }}</a></td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+  {% endif %}
+{% endblock %}
