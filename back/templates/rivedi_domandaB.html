@@ -25,7 +25,7 @@
 				 <form  novalidate method="post" action=".">
 				 <div class="row" style="padding-bottom: 20px;">
 					 <div class="col-sm-2" >
-						 <label for="cf_richiedente" class="col-sm-2 col-form-label">Codice fiscale</label>
+						 <label for="cf_richiedente" class="col-sm-2 col-form-label">Cod.fiscale</label>
 						   <input type="text" readonly class="form-control-plaintext" id="id_so_cod" value="{{ data.so_cod_fis}}">
 					 </div>
 					 <div class="col-sm-2" >
@@ -53,11 +53,11 @@
 				 </div>
 				 <div class="row" style="padding-bottom:20px;" >
 					 <div class="col-sm-2" >
-						 <label for="id_so_nasc_dt" class="col-sm-0 col-form-label">Data di nascita</label>
+						 <label for="id_so_nasc_dt" class="col-sm-0 col-form-label">Data nascita</label>
 						   <input type="text" readonly class="form-control-plaintext" id="id_so_nasc_dt" value="{{ data.so_nasc_dt |date:"d/m/Y"}}">
 					 </div>
 					 <div class="col-sm-2" >
-						 <label for="id_so_nasc_com" class="col-sm-0 col-form-label">Comune di nascita</label>
+						 <label for="id_so_nasc_com" class="col-sm-0 col-form-label">Comune nascita</label>
 						   <input type="text"  readonly class="form-control-plaintext" id="id_so_nasc_com" value="{{ data.so_nasc_com}}">
 					 </div>
 					<div class="col-sm-2" >
@@ -88,11 +88,11 @@
 				</div>
 				<div class="row" style="padding-bottom: 20px;" >
 						<div class="col-sm-2">
-							<label for="pr_nasc_dt" class="col-md-2 col-form-label">Data di nascita</label>
+							<label for="pr_nasc_dt" class="col-md-2 col-form-label">Data nascita</label>
 							  <input type="text" readonly class="form-control-plaintext" id="id_pr_nas_dt" value="{{ data.pr_nasc_dt |date:"d/m/Y"}}">
 						</div>
 						<div class="col-sm-2">
-							<label for="pr_nasc_com" class="col-md-2 col-form-label">Comune di nascita</label>
+							<label for="pr_nasc_com" class="col-md-2 col-form-label">Comune nascita</label>
 							  <input type="text" readonly class="form-control-plaintext" id="id_pr_nasc_com" value="{{ data.pr_nasc_com }}">
 						</div>
 						<div class="col-sm-0" >
