@@ -72,7 +72,7 @@
 			 			<label for="cognome" class="col-md-2 col-form-label">Cognome</label>
 			 				<input type="text" readonly class="form-control-plaintext" id="id_prcognome" value="{{ data.pr_cognome }}">
 			 		</div>
-			 		<div class="col-sm-2">
+			 		<div class="col-md-2">
 			 			<label for="nome" class="col-md-2 col-form-label">Nome</label>
 			 				<input type="text" readonly class="form-control-plaintext" id="id_nome" value="{{ data.pr_nome }}">
 			 		</div>
@@ -82,15 +82,15 @@
 			 		</div>
 			 	</div>
 			 	<div class="row" style="padding-bottom: 60px;" >
-			 			<div class="col-sm-2">
-			 				<label for="pr_nasc_dt" class="col-md-2 col-form-label">Data nascita</label>
+			 			 <div class="col-sm-2" >
+			 				<label for="pr_nasc_dt" class="col-sm-0 col-form-label">Data di nascita</label>
 			 					<input type="text" readonly class="form-control-plaintext" id="id_pr_nas_dt" value="{{ data.pr_nasc_dt |date:"d/m/Y"}}">
 			 			</div>
-			 			<div class="col-sm-2">
-			 				<label for="pr_nasc_com" class="col-md-2 col-form-label">Comune nascita</label>
+			 			 <div class="col-sm-4" >
+			 				<label for="pr_nasc_com" class="col-sm-4 col-form-label">Comune di  nascita</label>
 			 					<input type="text" readonly class="form-control-plaintext" id="id_pr_nasc_com" value="{{ data.pr_nasc_com }}">
 			 			</div>
-			 			<div class="col-sm-0" >
+			 			 <div class="col-sm-0" >
 			 				<label for="pr_sesso" class="col-sm-0 col-form-label">Sesso</label>
 			 					<input type="text" readonly class="form-control-plaintext" id="id_pr_sesso" value="{{ data.pr_sesso }}">
 			 			</div>
