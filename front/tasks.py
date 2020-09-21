@@ -9,6 +9,17 @@ from .domande_forms import *
 from django.conf import settings
 import os
 
+def get_url_prefix():
+	if settings.USE_ABSOLUTE_PATH == 'True':
+		if settings.HOSTNAME[0:7] != "http://":
+			hostname = "http://" + settings.HOSTNAME
+		else:
+			hostname = settings.HOSTNAME
+
+		return hostname
+	else:
+		return '/front'
+
 @shared_task
 def sleepy(duration):
 	sleep(duration)
@@ -16,14 +27,14 @@ def sleepy(duration):
 
 @shared_task
 def send_link_form(idIngresso):
+
 	token = tokens.generate(scope=(), key="", salt="None")
-	#al momento di generare il token, questo viene salvato nel db per matcharlo con la richiesta di aprire il form della domanda
+	# al momento di generare il token, questo viene salvato nel db per matcharlo con la richiesta di aprire il form della domanda
 	rec=Ingressi.objects.get(pk=idIngresso)
-	#stato=2 significa email inviata
+	# stato=2 significa email inviata
 	rec.stato=2
 	rec.token=token
 	rec.save()
-	print("token generato per id:"+str(id)+ '='+ token)
 
 	url_domanda = get_url_prefix() + '/domanda/?token='+token
 	context = {'url_domanda': url_domanda}
