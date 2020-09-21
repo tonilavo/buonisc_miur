@@ -105,7 +105,7 @@
 				<div class="row" style="padding-bottom: 30px;">
 							<div class="col-sm-2">
 								<label for="id_pr_fascia_asilo" class="col-sm-6 col-form-label">Nido/materna</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{% if data.pr_fascia_asilo=='M' %}Materna{% else %}Nido{% endif %}">
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{% if  data.pr_fascia_asilo == "M" %}Materna{% else %}Nido{% endif %}">
 							</div>
 							<div class="col-sm-2">
 								<label for="id_pr_tipo_asilo" class="col-sm-6 col-form-label">Privato/Comunale</label>
