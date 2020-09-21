@@ -127,10 +127,7 @@ def insert_domanda(request):
 			# si aggiorna il record con i dati dai campi non Db
 			# si leggono i valori da campi non db per tipo e asilo  e si scrivono nei campi db
 			# si trova il record  di Asili da legare in FK
-			asilo_cod = form.cleaned_data['selasilo']
-			asilorec = Asili.objects.get(pk=asilo_cod)
-			domandaform.pr_tipo_asilo = form.cleaned_data['seltipoasilo']
-			domandaform.pr_asilo = asilorec
+
 			#	si toglie l'iban farlocco messo all'inizio per passare il clean
 			if domandaform.so_risc_diretta == 'S':
 				domandaform.so_banca_iban = ''
