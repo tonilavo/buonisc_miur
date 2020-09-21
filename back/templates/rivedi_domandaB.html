@@ -109,7 +109,7 @@
 							</div>
 							<div class="col-sm-2">
 								<label for="id_pr_tipo_asilo" class="col-sm-6 col-form-label">Privato/Comunale</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{{ data.pr_tipo_asilo }}">
+								  <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{% if  data.pr_tipo_asilo == "P" %}Privato{% else %}Comaunale{% endif %}">
 							</div>
 				</div>
 				<div class="row" style="padding-bottom: 30px;">
