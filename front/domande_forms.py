@@ -110,7 +110,7 @@ class CrispyDomandaForm(Domandeform):
                      Column('so_cod_fis', css_class='form-control disabled col-md-2 mb-2', style='padding-right:50px;'),
                      Column('so_tel', css_class='read-only form-control col-md-2 mb-6'),
                      Column('so_email', css_class='form-control disabled col-md-4 mb-2', style='padding-right:50px;'),
-                     css_class='form-row col-md-12', style='padding-bottom:40px;'
+                     css_class='form-row col-md-12', style='padding-bottom:70px;'
                      ),
                     Row(
                         Column('so_flag_residente', css_class='form-control col-md-2 mb-6'),
