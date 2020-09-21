@@ -51,7 +51,7 @@
 						  <input type="text" readonly class="form-control-plaintext" id="id_so_sesso" value="{{ data.so_sesso}}">
 					</div>
 				 </div>
-				 <div class="row" style="padding-bottom:20px;" >
+				 <div class="row" style="padding-bottom:60px;" >
 					 <div class="col-sm-2" >
 						 <label for="id_so_nasc_dt" class="col-sm-0 col-form-label">Data nascita</label>
 						   <input type="text" readonly class="form-control-plaintext" id="id_so_nasc_dt" value="{{ data.so_nasc_dt |date:"d/m/Y"}}">
@@ -72,7 +72,7 @@
 				 </div>
 
 				<h5>Dati anagrafici del minore</h5>
-				<div class="row" style="padding-bottom: 20px;">
+				<div class="row" style="padding-bottom: 60px;">
 					<div class="col-md-2" >
 						<label for="cognome" class="col-md-2 col-form-label">Cognome</label>
 					  	<input type="text" readonly class="form-control-plaintext" id="id_prcognome" value="{{ data.pr_cognome }}">
@@ -101,9 +101,9 @@
 						</div>
 				</div>
 
+				<h5>Dati di frequenza del minore</h5>
+				<div class="row" style="padding-bottom: 60px;">
 
-				<div class="row" style="padding-bottom: 30px;padding-top:30px;">
-					<h5>Dati di frequenza del minore</h5>
 							<div class="col-sm-2">
 								<label for="id_pr_fascia_asilo" class="col-sm-6 col-form-label">Nido/materna</label>
 								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{% if  data.pr_fascia_asilo == "M" %}Materna{% else %}Nido{% endif %}">
