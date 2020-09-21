@@ -45,8 +45,8 @@
     </head>
 
     {# Display django.contrib.messages as Bootstrap alerts #}
-      <div style="padding-top: 50px;color: red;padding-left:50px;">
-        <strong>{% bootstrap_messages %}</strong>
+      <div style="padding-top: 50px;color: red;padding-left:50px; font-weight:bold;">
+        {% bootstrap_messages %}
       </div>
 {% block content %}
       {% block extra_js %}
