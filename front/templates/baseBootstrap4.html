@@ -7,10 +7,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='full' %}
 
-{# Display django.contrib.messages as Bootstrap alerts #}
-  <div style="padding-top: 50px;text-decoration-color: red;">
-    {% bootstrap_messages %}
-  </div>
+
 
   <head>
       <meta charset="utf-8">
@@ -47,7 +44,10 @@
       </header>
     </head>
 
-
+    {# Display django.contrib.messages as Bootstrap alerts #}
+      <div style="padding-top: 50px;text-decoration-color: red;">
+        {% bootstrap_messages %}
+      </div>
 {% block content %}
       {% block extra_js %}
       {% endblock extra_js %}
