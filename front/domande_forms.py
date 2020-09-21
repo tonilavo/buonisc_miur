@@ -62,7 +62,7 @@ class Domandeform(ModelForm):
                   'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia',
                   'pr_tipo_asilo': 'Tipologia', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
                   'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Importo buoni scuola',
-                  'pr_mesi_frequenza': 'Frequenza mesi num.',
+                  'pr_mesi_frequenza': 'Frequenza mesi',
                   'pr_imp_buoniinps': 'Importo buoni Inps', 'pr_spesa_totale': 'Spesa totale',
                   'pr_num_tot_ricevute': 'Numero', 'pr_importo_tot_ricevute': 'Importo totale'
                   }
@@ -72,7 +72,7 @@ class Domandeform(ModelForm):
                    'so_sesso': Select(choices=SEX_CHOICES), 'pr_sesso': Select(choices=SEX_CHOICES),
                    'pr_tipo_asilo': Select(choices=TIPOASILO_CHOICES),
                    'pr_nasc_dt': forms.SelectDateWidget(years=[date.today().year - i - 3 for i in range(5)]),
-                   'token': forms.HiddenInput, 'pr_stato': forms.HiddenInput,
+                   'token': forms.HiddenInput, 'pr_stato': forms.HiddenInput, 'pr_data_richiesta': forms.HiddenInput,
                    'so_flag_residente': Select(choices=SN_CHOICES),
                    'pr_isee': forms.TextInput( attrs={'class': 'form-control'}), 'pr_spesa_mese': forms.TextInput( attrs={'class': 'form-control', 'localization': True}),
                    'pr_spesa_totale':forms.TextInput( attrs={'class': 'form-control', 'localization': True}), 'pr_num_tot_ricevute': forms.TextInput( attrs={'class': 'form-control'}),
@@ -137,7 +137,7 @@ class CrispyDomandaForm(Domandeform):
                  Row(
                      Column('pr_fascia_asilo', css_class='form-control col-md-4 mb-4'),
                      Column('pr_tipo_asilo', css_class='form-control col-md-4 mb-4'),
-                     Column('pr_imp_buoniscuola', css_class='form-control col-md-2 mb-4', style='padding-right:30px;'),
+                     Column('pr_imp_buoniscuola', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
                      css_class='form-row  col-md-6', style='padding-top:10px;padding-bottom:50px;'
                  ),
                  Fieldset('',
@@ -146,14 +146,14 @@ class CrispyDomandaForm(Domandeform):
                      Column('pr_isee', css_class='form-control   col-md-2 mb-6'),
                      Column('pr_prot_isee_inps', css_class='form-control  col-md-4 mb-6'),
                      Column('pr_data_isee_inps', css_class='form-control  col-md-2 mb-6'),
-                     css_class='form-row col-md-8', style='padding-bottom:50px;'
+                     css_class='form-row col-md-8', style='padding-bottom:80px;'
                      ), css_id='campi_nido'
                  ),
                  Row(
-                    Column('pr_mesi_frequenza',  css_class='form-control col-md-4 mb-2'),
-                     Column('pr_spesa_mese', css_class='form-control col-md-4 mb-2'),
-                     Column('pr_spesa_totale', css_class='form-control col-md-4 mb-4'),
-                     css_class='form-row  col-8', style='padding-top:10px;padding-bottom:50px;'
+                    Column('pr_mesi_frequenza',  css_class='form-control col-md-2 mb-2'),
+                     Column('pr_spesa_mese', css_class='form-control col-md-2 mb-2'),
+                     Column('pr_spesa_totale', css_class='form-control col-md-2 mb-4'),
+                     css_class='form-row  col-6', style='padding-top:10px;padding-bottom:80px;'
                  ),                 ),
                 Div(
                     Fieldset('Ricevute allegate',
