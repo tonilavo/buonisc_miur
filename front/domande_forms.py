@@ -21,8 +21,8 @@ class MyModel(models.Model):
 
 
 SEX_CHOICES = (
-    ('M', 'M'),
-    ('F', 'F'),
+    ('M', 'Maschio'),
+    ('F', 'Femmina'),
     ('', '')
 )
 
@@ -54,13 +54,13 @@ class Domandeform(ModelForm):
         fields = '__all__'
 
         labels = {'pr_data_richiesta': 'Data inserimento', 'so_cognome': 'Cognome', 'so_nome': 'Nome',
-                  'so_sesso': 'Sesso', 'so_nasc_dt': 'Data di nascita', 'pr_data_isee_inps': 'Data DSU',
-                  'so_nasc_com': 'Comune di nascita', 'so_cod_fis': 'Cod.fiscale ', 'so_banca_iban': 'IBAN',
+                  'so_sesso': 'Sesso', 'so_nasc_dt': 'Data nascita', 'pr_data_isee_inps': 'Data DSU',
+                  'so_nasc_com': 'Comune nascita', 'so_cod_fis': 'Cod.fiscale ', 'so_banca_iban': 'IBAN',
                   'pr_prot_isee_inps': 'num.protocollo DSU', 'pr_isee': 'Isee', 'so_email': 'Email', 'so_tel':'Telefono',
                   'so_domicilio': 'Domicilio', 'so_flag_residente': 'Residente nel Comune',
                   'so_risc_diretta': 'Modalità di riscossione', 'pr_cognome': 'Cognome', 'pr_nome': 'Nome',
-                  'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia scuola',
-                  'pr_tipo_asilo': 'Comunale/ di privati', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
+                  'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia',
+                  'pr_tipo_asilo': 'Tipologia', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
                   'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Importo buoni scuola',
                   'pr_mesi_frequenza': 'Frequenza mesi num.',
                   'pr_imp_buoniinps': 'Importo buoni Inps', 'pr_spesa_totale': 'Spesa totale',
@@ -98,10 +98,10 @@ class CrispyDomandaForm(Domandeform):
                         Column('so_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
                         Column('so_nome', css_class='form-control col-md-4 mb-2', style='padding-right:50px;'),
 
-                        css_class='form-row col-md-8', style='padding-bottom:60px'
+                        css_class='form-row col-md-6', style='padding-bottom:60px'
                     ),
                     Row(
-                        Column('so_nasc_dt', css_class='form-control col-md-4 mb-2', style='padding-right:70px;'),
+                        Column('so_nasc_dt', css_class='form-control col-md-2 mb-2', style='padding-right:70px;'),
                         Column('so_nasc_com', css_class='form-control col-md-4 mb-2'),
                         Column('so_sesso', css_class='form-control col-md-2 mb-2'),
                         css_class='form-row col-8', style='padding-bottom:80px'
@@ -123,14 +123,14 @@ class CrispyDomandaForm(Domandeform):
             Fieldset('Dati  anagrafici del  minore',
                  Row(
                      Column('pr_cognome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
-                     Column('pr_nome', css_class='form-control col-md-2 mb-2', style='padding-right:30px;'),
-                     Column('pr_codfiscale', css_class='form-control col-md-2 mb-2', style='padding-right:30px;'),
-                     css_class='form-row col-md-12', style='padding-bottom:60px'
+                     Column('pr_nome', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
+                     Column('pr_codfiscale', css_class='form-control col-md-4 mb-2', style='padding-right:30px;'),
+                     css_class='form-row col-md-6', style='padding-bottom:60px'
                  ),
                  Row(
                      Column('pr_sesso', css_class='form-control col-md-2 mb-2'),
                      Column('pr_nasc_dt', css_class='form-control col-md-2 mb-2'),
-                     Column('pr_nasc_com', css_class='form-control col-md-6 mb-2', style='padding-right:50px'),
+                     Column('pr_nasc_com', css_class='form-control col-md-4 mb-2', style='padding-right:50px'),
                      css_class='form-row  col-md-12', style='padding-bottom:60px;'
                  )),
             Fieldset('Dati di frequenza',
@@ -138,7 +138,7 @@ class CrispyDomandaForm(Domandeform):
                      Column('pr_fascia_asilo', css_class='form-control col-md-4 mb-4'),
                      Column('pr_tipo_asilo', css_class='form-control col-md-4 mb-4'),
                      Column('pr_imp_buoniscuola', css_class='form-control col-md-2 mb-4', style='padding-right:30px;'),
-                     css_class='form-row  col-md-8', style='padding-top:10px;padding-bottom:50px;'
+                     css_class='form-row  col-md-6', style='padding-top:10px;padding-bottom:50px;'
                  ),
                  Fieldset('',
                  Row(
@@ -146,14 +146,14 @@ class CrispyDomandaForm(Domandeform):
                      Column('pr_isee', css_class='form-control   col-md-2 mb-6'),
                      Column('pr_prot_isee_inps', css_class='form-control  col-md-4 mb-6'),
                      Column('pr_data_isee_inps', css_class='form-control  col-md-2 mb-6'),
-                     css_class='form-row col-md-12', style='padding-bottom:50px;'
+                     css_class='form-row col-md-8', style='padding-bottom:50px;'
                      ), css_id='campi_nido'
                  ),
                  Row(
                     Column('pr_mesi_frequenza',  css_class='form-control col-md-4 mb-2'),
                      Column('pr_spesa_mese', css_class='form-control col-md-4 mb-2'),
                      Column('pr_spesa_totale', css_class='form-control col-md-4 mb-4'),
-                     css_class='form-row  col-12', style='padding-top:10px;padding-bottom:50px;'
+                     css_class='form-row  col-8', style='padding-top:10px;padding-bottom:50px;'
                  ),                 ),
                 Div(
                     Fieldset('Ricevute allegate',
