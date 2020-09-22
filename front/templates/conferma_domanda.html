@@ -18,7 +18,7 @@
         <p>Residente nel Comune di Grosseto</p>
     {% endif %}
     <p>Cod.fiscale:&ensp;{{ form.so_cod_fis.value}}</p>
-    	{% if  data.pr_fascia_asilo  == 'N' %}
+    	{% if  data.pr_fascia_asilo  =="N" %}
         <h3>Dati DSU</h3>
         <p>Isee:&ensp;{{ form.pr_isee.value}}</p>
         <p>Num.prot.DSU:&ensp;INPS-ISEE-2020-{{ form.pr_prot_isee_inps.value}}-00</p>
