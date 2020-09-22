@@ -37,7 +37,7 @@ class Preform(ModelForm):
         if not codicefiscale.is_valid(codfiscale):
             raise forms.ValidationError('Codice fiscale del richiedente non corretto')
 
-        data['codice_fiscale'] = codfiscale
+        data['codice_fiscale'] = codfiscale.upper()
         data['email'] = data.get('email').upper()
 
         self.cleaned_data = data
