@@ -127,7 +127,7 @@ class DomandeSerializer(serializers.ModelSerializer):
         url_dest = '<a href="/back/riapri_domanda/' + str(domanda.id) +  '" onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Riapri'
 
-        if domanda.pr_stato == 1 or True:  #si mette sempre abiltato
+        if domanda.pr_stato >= 1 :  #si mette sempre abilitato
             url_dest += get_attr_butt('btn-warning') + butt_label  +'</a>'
             return url_dest
         else:
