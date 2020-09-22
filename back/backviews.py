@@ -135,9 +135,9 @@ def conferma_domanda(request, id):
 
 @login_required()
 def send_domandanonvalida(request, id):
-    rec= Domande.objects.get(pk=id)
-    rec.pr_stato = 5
-    rec.save()
+	rec= Domande.objects.get(pk=id)
+	rec.pr_stato = 5
+	rec.save()
 	send_msg_domandanonvalida(id)
 	return redirect('/back/domandelist')
 
