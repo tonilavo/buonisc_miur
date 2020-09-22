@@ -96,9 +96,9 @@ class DomandeSerializer(serializers.ModelSerializer):
         elif domanda.pr_stato==1:
             return "Da esaminare"
         elif domanda.pr_stato==2:
-            return "Confermata da ufficio"
+            return "Confermata da uff."
         elif domanda.pr_stato==5:
-            return "Annullata"
+            return "Annullata da uff."
 
     link_edit = serializers.SerializerMethodField()
     def get_link_edit(self, domanda):
@@ -110,8 +110,8 @@ class DomandeSerializer(serializers.ModelSerializer):
 
     link_del = serializers.SerializerMethodField()
     def get_link_del(self, domanda):
-        function_js='"getConfirmation('+  str(domanda.id) + ');"'
-        url_dest = '<a href="/back/del_domanda/' + str(domanda.id) + '"  onclick=' + function_js
+        textmsg="Confermi la cancellazione della domanda n." + str(domanda.id) + '?'
+        url_dest = '<a href="/back/del_domanda/' + str(domanda.id) +  'onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Cestina'
 
         if domanda.pr_stato  < 2:
@@ -123,8 +123,8 @@ class DomandeSerializer(serializers.ModelSerializer):
 
     link_riapri = serializers.SerializerMethodField()
     def get_link_riapri(self, domanda):
-        function_js='"getConfirmation('+  str(domanda.id) + ');"'
-        url_dest = '<a href="/back/riapri_domanda/' + str(domanda.id) + '"  onclick=' + function_js
+        textmsg="Confermi la riapertura della domanda n." + str(domanda.id) + '?'
+        url_dest = '<a href="/back/riapri_domanda/' + str(domanda.id) +  'onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Riapri'
 
         if domanda.pr_stato == 1 or True:  #si mette sempre abiltato
@@ -150,7 +150,8 @@ class DomandeSerializer(serializers.ModelSerializer):
 
     link_conferma = serializers.SerializerMethodField()
     def get_link_conferma(self, domanda):
-        url_dest = '<a href="/back/conferma_domanda/'+str(domanda.id)+'" '
+        textmsg="Confermi la domanda n." + str(domanda.id) + '?'
+        url_dest = '<a href="/back/conferma_domanda/'+str(domanda.id)+'"  '+  'onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Conferma dati'
         if domanda.pr_stato == 1:
             url_dest += get_attr_butt('btn-success') + butt_label  +'</a>'
