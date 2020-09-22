@@ -40,6 +40,7 @@ def preform_insert(request):
 			preform = form.save(commit=False)
 			preform.data_ingresso = timezone.now()
 			preform.save()
+			send_link_form(preform.pk)
 			# visualizza messaggio di conferma all'utente
 			return render(request, 'response.html')
 
