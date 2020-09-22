@@ -9,7 +9,92 @@
 	<!--script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script-->
 	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-	<script src="{% static 'js/backdomande_scripts.js' %}"></script>
+	<script>
+
+			function hide(elemId){
+				elem =	document.getElementById(elemId)
+				elem.style.display="none"
+			}
+
+			function show(elemId){
+				elem	=	document.getElementById(elemId)
+				elem.style.display = "block"
+			}
+
+			function show_campi_xfascia(fascia_asilo) {
+					if (fascia_asilo == 'M') {
+							document.getElementById("campi_nido").style.display = "none";
+
+					} else {
+							document.getElementById("campi_nido").style.display = "block";
+					}
+			}
+			function show_campi_allegati(tipo_asilo) {
+					if (tipo_asilo == 'C') {
+							document.getElementById("riga_ricevute").style.display = "none";
+
+					} else {
+							document.getElementById("riga_ricevute").style.display = "block";
+					}
+			}
+
+			function showhide_domicilio(residenteSN) {
+					target = document.getElementById("domicilio");
+					if (residenteSN == 1) { // residente
+							target.style.display = "none";
+							target.val='';
+
+					} else { // non residente
+							target.style.display = "block";
+					}
+			}
+
+			function show_campi_banca(risc_diretta) {
+					if (risc_diretta == 'S') {
+							document.getElementById("id_iban").style.display = "none";
+
+					} else {
+							document.getElementById("id_iban").style.display = "block";
+					}
+			}
+
+			$(document).ready(function(){
+					//mostro o nascondo i campi  a seconda se nido o materna
+					fasciascuola_sel=$('#id_pr_fascia_asilo').val();
+					show_campi_xfascia(fasciascuola_sel);
+
+					residenteSN=$('#id_so_flag_residente').val();
+					showhide_domicilio(residenteSN);
+
+					tipo_asilo=$('#id_pr_tipo_asilo').val();
+					show_campi_allegati(tipo_asilo);
+
+					//mostro o nascondo i campi banca in base a risc diretta o no
+					risc_diretta=$('#id_so_risc_diretta').val();
+					x = show_campi_banca(risc_diretta);
+
+					$("#id_pr_fascia_asilo").change(function(){
+						fasciascuola_sel=$('#id_pr_fascia_asilo').val();
+						show_campi_xfascia(fasciascuola_sel);
+					});
+
+					$("#id_so_flag_residente").change(function(){
+							residenteSN=$('#id_so_flag_residente').val();
+							showhide_domicilio(residenteSN);
+					});
+
+					$("#id_pr_tipo_asilo").change(function(){
+								var tipo_asilo = $(this).val();
+								x = show_campi_allegati(tipo_asilo)
+					});
+
+					$("#id_so_risc_diretta").change(function(){
+									var risc_diretta = $(this).val();
+									x=show_campi_banca(risc_diretta);
+					});
+
+			});
+		</script>
 		{% endblock extra_js %}
 
 

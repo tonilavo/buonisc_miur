@@ -102,55 +102,55 @@
 				</div>
 
 				<h5>Dati di frequenza del minore</h5>
-				<div class="row" style="padding-bottom: 60px;">
+			 <div class="row" style="padding-bottom: 60px;">
 
-							<div class="col-sm-2">
-								<label for="id_pr_fascia_asilo" class="col-sm-6 col-form-label">Nido/materna</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{% if  data.pr_fascia_asilo == "M" %}Materna{% else %}Nido{% endif %}">
-							</div>
-							<div class="col-sm-2">
-								<label for="id_pr_tipo_asilo" class="col-sm-6 col-form-label">Privato/Comunale</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{% if  data.pr_tipo_asilo == "P" %}Privato{% else %}Comaunale{% endif %}">
-							</div>
-				</div>
-				<div class="row" style="padding-bottom: 30px;">
-							<div class="col-sm-2">
-								<label for="id_pr_mesi_frequenza" class="col-sm-6 col-form-label">Mesi di frequenza</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_mesi_frequenza }}">
-							</div>
-							<div class="col-sm-2">
-								<label for="id_pr_spesa_mese" class="col-sm-6 col-form-label">Spesa mensile</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_mese" value="{{ data.pr_spesa_mese }}">
-							</div>
-							<div class="col-sm-4">
-								<label for="id_pr_spesa_totale" class="col-sm-6 col-form-label">Spesa complessiva</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_totale" value="{{ data.pr_spesa_totale }}">
-							</div>
-				</div>
+						 <div class="col-sm-2">
+							 <label for="id_pr_fascia_asilo" class="col-sm-6 col-form-label">Nido/materna</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_fascia_asilo" value="{% if  data.pr_fascia_asilo == "M" %}Materna{% else %}Nido{% endif %}">
+						 </div>
+						 <div class="col-sm-2">
+							 <label for="id_pr_tipo_asilo" class="col-sm-6 col-form-label">Privato/Comunale</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_tipo_asilo" value="{% if  data.pr_tipo_asilo == "P" %}Privato{% else %}Comunale{% endif %}">
+						 </div>
+			 </div>
+			 <div class="row" style="padding-bottom: 30px;">
+						 <div class="col-sm-2">
+							 <label for="id_pr_mesi_frequenza" class="col-sm-6 col-form-label">Mesi di frequenza</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_mesi_frequenza }}">
+						 </div>
+						 <div class="col-sm-2">
+							 <label for="id_pr_spesa_mese" class="col-sm-6 col-form-label">Spesa mensile</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_mese" value="{{ data.pr_spesa_mese }}">
+						 </div>
+						 <div class="col-sm-4">
+							 <label for="id_pr_spesa_totale" class="col-sm-6 col-form-label">Spesa complessiva</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_spesa_totale" value="{{ data.pr_spesa_totale }}">
+						 </div>
+			 </div>
 
-				{% if  data.pr_tipo_asilo   == "P" %}
-					<div class="row" style="padding-bottom: 30px;">
-							<div class="col-sm-2">
-								<label for="id_pr_num_tot_ricevute" class="col-sm-6 col-form-label">Num.ricevute allegate</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_num_tot_ricevute }}">
-							</div>
-							<div class="col-sm-2">
-								<label for="id_pr_importo_tot_ricevute" class="col-sm-6 col-form-label">Importo totale delle ricevute</label>
-								  <input type="text" readonly class="form-control-plaintext" id="id_pr_importo_tot_ricevute" value="{{ data.pr_importo_tot_ricevute }}">
-							</div>
-					</div>
-				{% endif %}
+			 {% if  data.pr_tipo_asilo  == 'P' %}
+				 <div class="row" style="padding-bottom: 30px;">
+						 <div class="col-sm-2">
+							 <label for="id_pr_num_tot_ricevute" class="col-sm-6 col-form-label">Num.ricevute allegate</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_mesi_frequenza" value="{{ data.pr_num_tot_ricevute }}">
+						 </div>
+						 <div class="col-sm-2">
+							 <label for="id_pr_importo_tot_ricevute" class="col-sm-6 col-form-label">Importo totale delle ricevute</label>
+								 <input type="text" readonly class="form-control-plaintext" id="id_pr_importo_tot_ricevute" value="{{ data.pr_importo_tot_ricevute }}">
+						 </div>
+				 </div>
+			 {% endif %}
 
-				{% if  data.pr_isee %}
-				<div class="col-sm-2">
-						<label for="id_isee" class="col-sm-0 col-form-label">Importo Isee</label>
-						<input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_isee }}">
-						<label for="id_pr_prot_isee_inps" class="col-sm-0 col-form-label">Num.prot.INPS DSU</label>
-						<input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_prot_isee_inps }}">
-						<label for="pr_data_isee_inps" class="col-sm-0 col-form-label">Data presentaz.DSU</label>
-						<input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_data_isee_inps }}">
-				</div>
-				{% endif %}
+			 {% if  data.pr_fascia_asilo  == 'N' %}
+			 <div class="col-sm-2">
+					 <label for="id_isee" class="col-sm-0 col-form-label">Importo Isee</label>
+					 <input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_isee }}">
+					 <label for="id_pr_prot_isee_inps" class="col-sm-0 col-form-label">Num.prot.INPS DSU</label>
+					 <input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_prot_isee_inps }}">
+					 <label for="pr_data_isee_inps" class="col-sm-0 col-form-label">Data presentaz.DSU</label>
+					 <input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_data_isee_inps }}">
+			 </div>
+			 {% endif %}
 
 				<div class="row" style="padding-bottom: 20px;">
 					<div class="col-sm-2">
