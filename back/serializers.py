@@ -153,7 +153,7 @@ class DomandeSerializer(serializers.ModelSerializer):
         textmsg="Confermi la domanda n." + str(domanda.id) + '?'
         url_dest = '<a href="/back/conferma_domanda/'+str(domanda.id) +  '" onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Conferma dati'
-        if domanda.pr_stato == 1:
+        if domanda.pr_stato <= 1:
             url_dest += get_attr_butt('btn-success') + butt_label  +'</a>'
             return url_dest
         else:
