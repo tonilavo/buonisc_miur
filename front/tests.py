@@ -39,11 +39,13 @@ class DomandeTestCase(TestCase):
             domanda_data['pr_nasc_dt']= datetime.datetime(2016,11,29)
             domanda_data['pr_nasc_com'] = 'GROSSETO'
             domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
-            domanda_data['pr_fascia_asilo']='M'
+            domanda_data['pr_fascia_asilo']='N'
             domanda_data['pr_tipo_asilo']='P'
             domanda_data['pr_spesa_mese']=180
             domanda_data['pr_spesa_totale']=1440
             domanda_data['pr_isee']= 5700
+            domanda_data['pr_prot_isee_inps']='INPS-ISEE-2020-43567844-00'
+            domanda_data['pr_data_isee_inps']=datetime.date(2020,4,22)
             domanda_data['so_risc_diretta']='N'
             domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
             domanda_data['so_risc_diretta']='N'
