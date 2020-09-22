@@ -18,8 +18,8 @@
         <p>Residente nel Comune di Grosseto</p>
     {% endif %}
     <p>Cod.fiscale:&ensp;{{ form.so_cod_fis.value}}</p>
-    	{% if  data.pr_fascia_asilo  == "N" %}
-        <h3>Dati DSU</h3>
+    	{% if  form.pr_fascia_asilo.value  == "N" %}
+        <h4>Dati DSU</h4>
         <p>Isee:&ensp;{{ form.pr_isee.value}}</p>
         <p>Num.prot.DSU:&ensp;INPS-ISEE-2020-{{ form.pr_prot_isee_inps.value}}-00</p>
         <p>Data DSU: {{ form.pr_data_isee_inps.value|date:"d/m/Y"}}</p>
@@ -29,6 +29,7 @@
     <p>Cod.fiscale:&ensp;{{ form.pr_codfiscale.value}}</p>
     <p>Data nascita:&ensp;{{ form.pr_nasc_dt.value|date:"d/m/Y"}}</p>
     <p>Luogo di nascita:&ensp;{{ form.pr_nasc_com.value}}</p>
+    <h3>Dati di frequenza del minore</h3>
     <p>Spesa mensile:&ensp;{{ form.pr_spesa_mese.value}}</p>
     <p>Spesa complessiva:&ensp;{{ form.pr_spesa_totale.value}}</p>
     {% if  form.pr_num_tot_ricevute.value %}
