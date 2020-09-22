@@ -98,15 +98,16 @@
 		{% endblock extra_js %}
 
 
-		<div class="row">
-			<a href="/back/domandelist" style="padding-left:275px;padding-top:10px;">Torna alla lista</a>
-	</div>
+
 		<div class="row">
 		 <div class="col-md-8" style="padding-left:65px;padding-top:10px;">
 
 
         	{% crispy form %}
+			</div>
+	   </div>
 
-	    	 </div>
-
+	<div class="row">
+		<a href="/back/domandelist" style="padding-left:275px;padding-top:10px;">Torna alla lista</a>
+	</div>
   {% endblock  %}
