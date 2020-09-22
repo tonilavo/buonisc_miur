@@ -92,7 +92,7 @@ class DomandeSerializer(serializers.ModelSerializer):
     stato_parlato = serializers.SerializerMethodField()
     def get_stato_parlato(self, domanda):
         if domanda.pr_stato==0:
-            return "Non salvata"
+            return "Aperta"
         elif domanda.pr_stato==1:
             return "Da esaminare"
         elif domanda.pr_stato==2:
