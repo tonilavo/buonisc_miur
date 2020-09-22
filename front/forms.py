@@ -25,10 +25,11 @@ class Preform(ModelForm):
         if not codicefiscale.is_valid(codfiscale):
             raise forms.ValidationError('Codice fiscale del minore non corretto')
         #ricerca di predomande per questo bimbo
-        recs=Ingressi.objects.filter(codfis_bimbo=codfiscale, stato__lte=2)
-
-        if recs.count() > 0 and not self.instance.pk: #esiste un'altra preform con lo stesso cidfis minore e stato non annullato
+        recs=Domande.objects.filter(pr_codfiscale=codfiscale, pr_stato__lte=2)
+        if recs.count() > 0 : #esiste un'altra preform con lo stesso cidfis minore e stato non annullato
+        #and not self.instance.pk
             raise forms.ValidationError('Richiesta  già presente per il minore con cod.fiscale '+ codfiscale + '.')
+
         data['codfis_bimbo'] = codfiscale
 
         #controllo codice fiscale richiedente
