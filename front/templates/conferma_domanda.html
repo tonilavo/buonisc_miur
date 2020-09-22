@@ -21,7 +21,7 @@
     	{% if  form.pr_fascia_asilo.value  == "N" %}
         <h4>Dati DSU</h4>
         <p>Isee:&ensp;{{ form.pr_isee.value}}</p>
-        <p>Num.prot.DSU:&ensp;INPS-ISEE-2020-{{ form.pr_prot_isee_inps.value}}-00</p>
+        <p>Num.prot.DSU:&ensp;{{ form.pr_prot_isee_inps.value}}</p>
         <p>Data DSU: {{ form.pr_data_isee_inps.value|date:"d/m/Y"}}</p>
       {% endif %}
     <h3>Dati anagrafici del minore</h3>
