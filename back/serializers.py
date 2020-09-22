@@ -137,7 +137,8 @@ class DomandeSerializer(serializers.ModelSerializer):
     link_rifiuta = serializers.SerializerMethodField()
     def get_link_rifiuta(self, domanda):
         function_js='"getConfirmation('+  str(domanda.id) + ');"'
-        url_dest = '<a href="/back/send_domandanonvalida/' + str(domanda.id) + '"  onclick=' + function_js
+        textmsg = "Confermi l'annullamento della domanda n." +  str(domanda.id) + '?'
+        url_dest = '<a href="/back/send_domandanonvalida/' + str(domanda.id) +  'onclick="return confirm(\'' + textmsg + '\')"'
         butt_label = 'Comunica dati errati'
 
         if domanda.pr_stato == 1:
