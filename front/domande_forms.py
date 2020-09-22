@@ -267,6 +267,9 @@ class CrispyDomandaForm(Domandeform):
             if data.get('pr_spesa_mese')  <= 120:
                 raise forms.ValidationError("Si accettano solo domande con spesa mensile superiore a 120 euro.")
 
+        if  data.get('pr_spesa_mese') *  data.get('pr_mesi_frequenza') > data.get('pr_spesa_totale'):
+            raise forms.ValidationError("La spesa totale non è congruente con la spesa mensile per i mesi frequentati.")
+
         data['so_cognome'] = data.get('so_cognome').upper()
         data['so_nome'] = data.get('so_nome').upper()
         data['so_nasc_com'] = data.get('so_nasc_com').upper()
