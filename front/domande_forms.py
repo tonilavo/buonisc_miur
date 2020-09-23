@@ -62,8 +62,7 @@ class Domandeform(ModelForm):
                   'pr_sesso': 'Sesso', 'pr_codfiscale': 'cod.fiscale', 'pr_fascia_asilo': 'Fascia',
                   'pr_tipo_asilo': 'Tipologia', 'pr_nasc_dt': 'data nascita', 'pr_nasc_com': 'Comune nascita',
                   'pr_spesa_mese': 'Spesa mensile', 'pr_imp_buoniscuola': 'Importo buoni scuola',
-                  'pr_mesi_frequenza': 'Frequenza mesi',
-                  'pr_imp_buoniinps': 'Importo buoni Inps', 'pr_spesa_totale': 'Spesa totale',
+                  'pr_mesi_frequenza': 'Frequenza mesi', 'pr_spesa_totale': 'Spesa totale',
                   'pr_num_tot_ricevute': 'Numero', 'pr_importo_tot_ricevute': 'Importo totale'
                   }
         localized_fields = '__all__'
@@ -71,13 +70,13 @@ class Domandeform(ModelForm):
         widgets = {'so_risc_diretta': Select(choices=RISC_CHOICES), 'pr_fascia_asilo': Select(choices=FASCIAASILO_CHOICES),
                    'so_sesso': Select(choices=SEX_CHOICES), 'pr_sesso': Select(choices=SEX_CHOICES),
                    'pr_tipo_asilo': Select(choices=TIPOASILO_CHOICES),
-                   'pr_nasc_dt': forms.SelectDateWidget(years=[date.today().year - i - 3 for i in range(5)]),
+                   'pr_nasc_dt': forms.SelectDateWidget(years=[date.today().year - i - 1 for i in range(7)]),
                    'token': forms.HiddenInput, 'pr_stato': forms.HiddenInput, 'pr_data_richiesta': forms.HiddenInput,
                    'so_flag_residente': Select(choices=SN_CHOICES),
                    'pr_isee': forms.TextInput( attrs={'class': 'form-control'}), 'pr_spesa_mese': forms.TextInput( attrs={'class': 'form-control', 'localization': True}),
                    'pr_spesa_totale':forms.TextInput( attrs={'class': 'form-control', 'localization': True}), 'pr_num_tot_ricevute': forms.TextInput( attrs={'class': 'form-control'}),
                     'pr_importo_tot_ricevute': forms.TextInput( attrs={'class': 'form-control'}), 'pr_imp_buoniscuola':forms.TextInput( attrs={'class': 'form-control'}),
-                    'pr_imp_buoniinps':forms.TextInput( attrs={'class': 'form-control'}), 'pr_data_isee_inps': DatePickerInput(format='%d/%m/%Y', options={'locale': 'it'})
+                    'pr_data_isee_inps': DatePickerInput(format='%d/%m/%Y', options={'locale': 'it'})
                    }
 
 
@@ -142,7 +141,6 @@ class CrispyDomandaForm(Domandeform):
                  ),
                  Fieldset('',
                  Row(
-                     Column('pr_imp_buoniinps', css_class='form-control col-md-2 mb-4', style='padding-right:50px'),
                      Column('pr_isee', css_class='form-control   col-md-2 mb-6'),
                      Column('pr_prot_isee_inps', css_class='form-control  col-md-4 mb-6'),
                      Column('pr_data_isee_inps', css_class='form-control  col-md-2 mb-6'),
