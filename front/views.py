@@ -145,7 +145,7 @@ def insert_domanda(request):
 							 'pr_cognome': cognome_minore, 'pr_nome': nome_minore, 'pr_sesso': sex_minore,
                              'pr_prot_isee_inps': 'INPS-ISEE-2020-', 'pr_codfiscale': rec.codfis_bimbo,
 							 'pr_nasc_dt': dtnascita_minore, 'pr_nasc_com': luogo_nascita_minore,
-							 'pr_tipo_asilo': 'C'})
+							 'pr_fascia_asilo':'M', 'pr_tipo_asilo': 'C'})
 
 			else:  # token sconosciuto
 				msg = 'Utente non autorizzato. Impossibile continuare'
