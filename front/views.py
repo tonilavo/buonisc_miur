@@ -103,14 +103,11 @@ def insert_domanda(request):
 				comunenascita_ric=''
 				indirizzo_ric=''
 				if anag_richiedente:
-					cognome_ric = anag_richiedente.cognome
-					nome_ric = anag_richiedente.nome
-					dtnascita_ric = anag_richiedente.data_nascita
-					comuneNascita_ric=anag_richiedente.comune_nascita
-					indirizzo_ric=anag_richiedente.indirizzo
-
-
-
+					cognome_ric = anag_richiedente['cognome']
+					nome_ric = anag_richiedente['nome']
+					dtnascita_ric = anag_richiedente['data_nascita']
+					comuneNascita_ric=anag_richiedente['comune_nascita']
+					indirizzo_ric=anag_richiedente['indirizzo']
 				#cf = codicefiscale.decode(cod_fiscale)
 				#luogo_nascita_ric=cf['birthplace']['name']
 				#dtnascita_ric =  cf ['birthdate']
