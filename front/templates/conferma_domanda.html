@@ -39,9 +39,6 @@
     {% if  form.pr_imp_buoniscuola.value %}
         <p>Importo riscosso per buoni scuola:&ensp;{{ form.pr_imp_buoniscuola.value}}</p>
     {% endif %}
-    {% if  form.pr_imp_buoniinps.value %}
-        <p>Importo riscosso per buoni Inps:&ensp;{{ form.pr_imp_buoniinps.value}}</p>
-    {% endif %}
 
     <p>Riscossione&ensp;{% if  form.so_risc_diretta.value == 'S'%}per cassa{% else %}per banca&ensp;IBAN:{{ form.so_banca_iban.value}}{% endif %}</p>
 </html>
