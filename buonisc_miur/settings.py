@@ -88,7 +88,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'buonisc_miur.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -124,6 +123,7 @@ TIME_ZONE = "Europe/Rome"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+DECIMAL_SEPARATOR = ','
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -235,3 +235,5 @@ else:
 SESSION_ENGINE='django.contrib.sessions.backends.file'
 
 DATA_SCADENZA = env('DATA_SCADENZA')
+
+APK_SERVICE='http://10.0.80.102:8080/api/apkanagrafica/'
