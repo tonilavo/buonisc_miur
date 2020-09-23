@@ -129,7 +129,7 @@ def insert_domanda(request):
 					cognome_minore = anag_minore['cognome']
 					nome_minore = anag_minore['nome']
 					dtnascita_minore = anag_minore['data_nascita']
-					luogo_nascita_minore=anag_richiedente['comune_nascita']
+					luogo_nascita_minore=anag_minore['comune_nascita']
 
 				if int(cod_fiscale[9:11])>31:
 					sex_minore='F'
