@@ -1,0 +1,17 @@
+{% extends "baseBootstrap4.html" %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="it">
+
+
+{% block content %}
+
+<div class="row" style="padding-left:250px;padding-top:30px;">
+<div class="col-md-2"  >
+ <img src="{% static "stop.png" %}" class="mx-auto d-block" alt="Stop"> 
+</div>
+<div class="col-md-4" style="padding-top:70px;">
+<h4>{{errmessage}}</h4>
+</div>
+</div>
+{% endblock %}
