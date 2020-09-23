@@ -196,14 +196,14 @@ class CrispyDomandaForm(Domandeform):
             str_dtnascita = str(dt_nascita.day) + '/' + str(dt_nascita.month) + '/' + str(dt_nascita.year)
 
             dati_decodecf =  codicefiscale.decode(codice_fiscale)
-            if dati_decodecf['birthplace']['name'] != data.get('so_nasc_com').upper():
-                raise forms.ValidationError('Luogo di nascita non coerente con quello ricavato dal codice fiscale del richiedente.')
+            #if dati_decodecf['birthplace']['name'] != data.get('so_nasc_com').upper():
+            #    raise forms.ValidationError('Luogo di nascita non coerente con quello ricavato dal codice fiscale del richiedente.')
 
-            #cf_calcolato= build_cf(data.get('pr_cognome'), data.get('pr_nome'), datetime.datetime(dt_nascita.year, dt_nascita.month, dt_nascita.day),  data.get('pr_sesso'), comune_cf)
-            cf_calcolato = codicefiscale.encode(surname=data.get('so_cognome'), name=data.get('so_nome'), sex=data.get('so_sesso'), birthdate=str_dtnascita, birthplace=data.get('so_nasc_com'))
-            if (cf_calcolato != codice_fiscale) and (codice_fiscale not in codicefiscale.decode(cf_calcolato)['omocodes']):
-                alert_msg = 'Codice fiscale del richiedente non coerente con i dati anagrafici indicati'
-                raise forms.ValidationError(alert_msg)
+        
+        #    cf_calcolato = codicefiscale.encode(surname=data.get('so_cognome'), name=data.get('so_nome'), sex=data.get('so_sesso'), birthdate=str_dtnascita, birthplace=data.get('so_nasc_com'))
+            #if (cf_calcolato != codice_fiscale) and (codice_fiscale not in codicefiscale.decode(cf_calcolato)['omocodes']):
+        #        alert_msg = 'Codice fiscale del richiedente non coerente con i dati anagrafici indicati'
+        #        raise forms.ValidationError(alert_msg)
             data['so_cod_fis'] = codice_fiscale
 
         if data.get('pr_codfiscale'):
@@ -221,8 +221,8 @@ class CrispyDomandaForm(Domandeform):
             #cf_calcolato= build_cf(data.get('pr_cognome'), data.get('pr_nome'), datetime.datetime(dt_nascita.year, dt_nascita.month, dt_nascita.day),  data.get('pr_sesso'), comune_cf)
             cf_calcolato = codicefiscale.encode(surname=data.get('pr_cognome'), name=data.get('pr_nome'), sex=data.get('pr_sesso'), birthdate=str_dtnascita, birthplace=data.get('pr_nasc_com'))
             #print("CF calcolato:"+cf_calcolato)
-            if (cf_calcolato != codice_fiscale) and (codice_fiscale not in codicefiscale.decode(cf_calcolato)['omocodes']):
-                raise forms.ValidationError('Codice fiscale del minore non coerente con i dati anagrafici')
+            #if (cf_calcolato != codice_fiscale) and (codice_fiscale not in codicefiscale.decode(cf_calcolato)['omocodes']):
+            #    raise forms.ValidationError('Codice fiscale del minore non coerente con i dati anagrafici')
 
             # controllo presenza domanda con stesso codice fiscale alunno
             domande_alunno = Domande.objects.filter(pr_codfiscale=codice_fiscale, pr_stato__gte=0, pr_stato__lt=5)
