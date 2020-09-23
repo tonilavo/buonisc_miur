@@ -96,10 +96,26 @@ def insert_domanda(request):
 			if ingressi.count() == 1:  # trovato l'ingresso corrispondente
 				rec = ingressi[0]
 				cod_fiscale = rec.codice_fiscale
-				cf = codicefiscale.decode(cod_fiscale)
-				luogo_nascita_ric=cf['birthplace']['name']
-				dtnascita_ric =  cf ['birthdate']
-				sex_ric = cf['sex']
+				anag_richiedente = get_ana_apk(cod_fiscale)
+				cognome_ric=''
+				nome_ric=''
+				dtnascita_ric=None
+				comunenascita_ric=''
+				indirizzo_ric=''
+				if anag_richiedente:
+					cognome_ric = anag_richiedente.cognome
+					nome_ric = anag_richiedente.nome
+					dtnascita_ric = anag_richiedente.data_nascita
+					comuneNascita_ric=anag_richiedente.comune_nascita
+					indirizzo_ric=anag_richiedente.indirizzo
+
+
+
+				#cf = codicefiscale.decode(cod_fiscale)
+				#luogo_nascita_ric=cf['birthplace']['name']
+				#dtnascita_ric =  cf ['birthdate']
+				#sex_ric = cf['sex']
+
 				cod_fiscale = rec.codfis_bimbo
 				cf = codicefiscale.decode(cod_fiscale)
 				luogo_nascita_minore = cf['birthplace']['name']
@@ -108,8 +124,9 @@ def insert_domanda(request):
 
 				form = CrispyDomandaForm(
 						initial={'token': mytoken, 'pr_data_richiesta': timezone.now().date,
-							 'so_cod_fis': rec.codice_fiscale,
-							 'so_nasc_dt': dtnascita_ric, 'so_nasc_com': luogo_nascita_ric, 'so_sesso': sex_ric,
+							 'so_cod_fis': rec.codice_fiscale, 'so_cognome': cognome_ric,
+							 'so_nome': nome_ric,
+							 'so_nasc_dt': dtnascita_ric, 'so_nasc_com': comunenascita_ric,
 							 'so_tel': rec.tel, 'so_email': rec.email, 'so_risc_diretta': 'S',
                              'pr_prot_isee_inps': 'INPS-ISEE-2020-', 'pr_codfiscale': rec.codfis_bimbo, 'pr_sesso': sex_minore,
 							 'pr_nasc_dt': dtnascita_minore, 'pr_nasc_com': luogo_nascita_minore,
@@ -452,7 +469,6 @@ def domandatest(request):
 		domanda_num = testdomande_rec[0].pk
 
 	return redirect(get_url_prefix() + '/update_domanda/' + str(domanda_num)+'/')
-
 
 def get_ana_apk(cod_fiscale):
     dati_anag = None
