@@ -102,17 +102,22 @@ def insert_domanda(request):
 				dtnascita_ric=None
 				comunenascita_ric=''
 				indirizzo_ric=''
+
 				if anag_richiedente:
 					cognome_ric = anag_richiedente['cognome']
 					nome_ric = anag_richiedente['nome']
 					dtnascita_ric = anag_richiedente['data_nascita']
 					comuneNascita_ric=anag_richiedente['comune_nascita']
 					indirizzo_ric=anag_richiedente['indirizzo']
+
+				if int(cod_fiscale[9:11])>31:
+					sex_ric='F'
+				else:
+					sex_ric ='M'
 				#cf = codicefiscale.decode(cod_fiscale)
 				#luogo_nascita_ric=cf['birthplace']['name']
 				#dtnascita_ric =  cf ['birthdate']
 				#sex_ric = cf['sex']
-
 				cod_fiscale = rec.codfis_bimbo
 				anag_minore = get_ana_apk(cod_fiscale)
 				cognome_minore=''
@@ -125,14 +130,18 @@ def insert_domanda(request):
 					nome_minore = anag_minore['nome']
 					dtnascita_minore = anag_minore['data_nascita']
 					luogo_nascita_minore=anag_richiedente['comune_nascita']
+					if int(cod_fiscale[9:11])>31:
+						sex_minore='F'
+					else:
+						sex_minore ='M'
 
 				form = CrispyDomandaForm(
 						initial={'token': mytoken, 'pr_data_richiesta': timezone.now().date,
 							 'so_cod_fis': rec.codice_fiscale, 'so_cognome': cognome_ric,
-							 'so_nome': nome_ric,
+							 'so_nome': nome_ric, 'so_sesso': sex_ric,
 							 'so_nasc_dt': dtnascita_ric, 'so_nasc_com': comuneNascita_ric,
 							 'so_tel': rec.tel, 'so_email': rec.email, 'so_risc_diretta': 'S',
-							 'pr_cognome': cognome_minore, 'pr_nome': nome_minore,
+							 'pr_cognome': cognome_minore, 'pr_nome': nome_minore, 'pr_sesso': sex_minore,
                              'pr_prot_isee_inps': 'INPS-ISEE-2020-', 'pr_codfiscale': rec.codfis_bimbo,
 							 'pr_nasc_dt': dtnascita_minore, 'pr_nasc_com': luogo_nascita_minore,
 							 'pr_tipo_asilo': 'C'})
