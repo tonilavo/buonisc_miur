@@ -13,6 +13,7 @@ from django.contrib.messages import get_messages
 from codicefiscale import codicefiscale
 import random
 import datetime
+import requests
 
 def get_url_prefix():
 	if settings.USE_ABSOLUTE_PATH == 'True':
@@ -451,3 +452,23 @@ def domandatest(request):
 		domanda_num = testdomande_rec[0].pk
 
 	return redirect(get_url_prefix() + '/update_domanda/' + str(domanda_num)+'/')
+
+
+def get_ana_apk(cod_fiscale):
+    dati_anag = None
+    risp = requests.get( settings.APK_SERVICE + cod_fiscale)
+    dato = risp.json()
+
+    if dato['cognome']:
+    	#	replica la domanda in Pratiche integrandola con la parte anagrafica e di residenza
+    	#	rimetto in unica stringa i campi dell'indirizzo
+        indirizzo = '' if dato['resDUG'] is None else dato['resDUG']
+        indirizzo +=  '' if  dato['resDUF'] is None else ' ' + dato['resDUF']
+        indirizzo +=  '' if dato['resCivico'] is None else ' ' + str(dato['resCivico'])
+
+        str_dtaNascita = dato['dataNascita'][0:10]
+        dtaNascita = datetime.datetime.strptime(str_dtaNascita, "%Y-%m-%d").date()
+        dati_anag = {'cognome': dato['cognome'], 'nome': dato['nome'], 'cod_fiscale': cod_fiscale,  'data_nascita': dtaNascita,
+                                        'comune_nascita': dato['comuneNascita'], 'prov': dato['provinciaNascita'], 'indirizzo': indirizzo, 'local':'GROSSETO', 'cap':58100, 'prov': 'GR'}
+
+    return dati_anag
