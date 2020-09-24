@@ -304,6 +304,10 @@ class CrispyDomandaForm(Domandeform):
             elif datadsu > datetime.date.today():
                 raise forms.ValidationError("Ammesse solo date passate")
 
+            if data.get('pr_tipo_asilo') == 'C':
+                data['pr_num_tot_ricevute'] = None
+                data['pr_importo_tot_ricevute'] = None
+
         return data
 
 class PhotoForm(forms.Form):
