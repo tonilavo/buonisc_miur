@@ -2,39 +2,10 @@ Salve
     per procedere alla compilazione della richiesta di buoni MIUR, si prega di cliccare al seguente indirizzo:
     {{ url_domanda }}
 
-    Pertanto, dall'indirizzo Internet {{ url_domanda }}, avrà accesso al modulo da compilare.
-
-    Nel caso il contributo vada richiesto per più figli, riutilizzare lo stesso indirizzo per quante sono le domanda da compilare.
+Nel caso che il contributo vada richiesto per più figli, la procedura va ripetuta per ognuno.
+Si prega inoltre di conservare questa email, in quanto potrebbero essere necessari più passaggi per la compilazione della domanda.
+Il collegamento sopraindicato consente di rientrare nella domanda più volte per completarne la compilazione  fino all'invio dei dati compilati all'ufficio.
+All'invio della domanda all'ufficio competente riceverete una seconda email con il riepilogo dei dati trasmessi.
 
     Cordiali saluti,
         Comune di Grosseto - Servizi educativi
-
-
-        <!DOCTYPE html>
-
-
-        <body>
-        <div class="container">
-            <p>
-                Salve,
-            </p>
-            <p>
-                per procedere alla compilazione della richiesta di buoni MIUR, si prega di cliccare al seguente   <b><a href="{{ url_domanda }}">collegamento</a></b>.
-            </p>
-            <p>
-                  Nel caso che il contributo vada richiesto per più figli, la procedura va ripetuta per ognuno.
-            </p>
-            <p>
-                 Si prega inoltre di conservare questa email, in quanto potrebbero essere necessari più passaggi per la compilazione della domanda.
-                 Il collegamento suddetto consente di rientrare nella domanda più volte per completarne la compilazione  fino all'invio dei dati compilati all'ufficio.
-            </p>
-            <p>
-                All'invio della domanda all'ufficio competente riceverete una seconda email con il riepilogo dei dati trasmessi.
-            </p>
-            <br/>
-            <span>Cordiali saluti, </span>
-            <br/>
-            <em>Comune di Grosseto - Servizi educativi</em>
-        </div>
-        </body>
-        </html>
