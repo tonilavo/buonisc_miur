@@ -138,21 +138,29 @@
 			 			<input type="text" readonly class="form-control-plaintext" id="id_isee" value="{{ data.pr_data_isee_inps }}">
 			 	</div>
 			 	{% endif %}
+				{% if  data.pr_imp_buoniscuola  %}
 
-				<div class="row" style="padding-bottom: 20px;">
-					<div class="col-sm-2">
-					<label for="id_pr_risc" class="col-md-2 col-form-label">Riscossione</label>
-						  <input type="text" readonly class="form-control-plaintext" id="id_pr_risc"
-						  value="{% if  data.so_risc_diretta  == 'S'%}per cassa{% else %}per banca{% endif %}">
-					</div>
+ 				 <div class="row" style="padding-bottom: 20px;">
+ 					 <div class="col-sm-6">
+ 						 <label for="id_pr_imp_buoniscuola" class="col-md-6 col-form-label">Importo riscosso per buoni scuola</label>
+ 						 <input type="text" readonly class="form-control-plaintext" id="id_pr_imp_buoniscuola"  value="{{ data.pr_imp_buoniscuola }}">
+ 					 </div>
+ 				 </div>
+ 			 {% endif %}
+			 <div class="row" style="padding-bottom: 20px;">
+				 <div class="col-sm-2">
+				 <label for="id_pr_risc" class="col-md-2 col-form-label">Riscossione</label>
+						 <input type="text" readonly class="form-control-plaintext" id="id_pr_risc"
+						 value="{% if  data.so_risc_diretta  == 'S'%}per cassa{% else %}per banca{% endif %}">
+				 </div>
 
-					{% if  data.so_risc_diretta  == 'N' %}
+
+				{% if  data.so_risc_diretta  == 'N' %}
 					<div class="col-md-6">
 						<label for="so_banca_iban" class="col-md-2 col-form-label">IBAN</label>
 						<input type="text" readonly class="form-control-plaintext" id="id_so_banca_iban" value="{{ data.so_banca_iban  }}">
-
 					</div>
-					{%  endif %}
+				{%  endif %}
 				</div>
 				{% if photos and   data.pr_tipo_asilo  == 'P' %}
 						<div class="col-sm-6" style="padding-top:30px;">
