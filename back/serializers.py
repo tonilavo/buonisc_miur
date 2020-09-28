@@ -162,4 +162,4 @@ class DomandeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Domande
-        fields = ['id', 'pr_data_richiesta', 'so_cod_fis', 'ut_tel', 'pr_isee', 'so_email', 'pr_cognome', 'pr_nome', 'pr_codfiscale', 'pr_tipo_asilo', 'stato_parlato', 'link_edit', 'link_conferma', 'link_del', 'link_riapri', 'link_rifiuta']
+        fields = ['id', 'pr_data_richiesta', 'so_cod_fis', 'ut_tel', 'pr_isee', 'so_email', 'pr_cognome', 'pr_nome', 'pr_codfiscale',   'pr_fascia_asilo', 'pr_tipo_asilo', 'stato_parlato', 'link_edit', 'link_conferma', 'link_del', 'link_riapri', 'link_rifiuta']
