@@ -34,7 +34,7 @@ def preform_insert(request):
 		return render(request, 'preform_fine.html', context)
 
 	if request.method == 'GET':
-		form = CrispyPreForm(initial={'protocollo_inps': 'INPS-ISEE-2020-XXXXXXXXX-00', 'isee': 0.0})
+		form = CrispyPreForm()
 	else:
 		form = CrispyPreForm(request.POST)
 		if form.is_valid():
@@ -44,6 +44,43 @@ def preform_insert(request):
 			send_link_form(preform.pk)
 			# visualizza messaggio di conferma all'utente
 			return render(request, 'response.html')
+
+	context = {'form': form}
+	return render(request, 'preform.html', context)
+
+
+def preform_insert_captcha(request):
+	dt_scadenza = datetime.datetime.strptime(settings.DATA_SCADENZA, "%d/%m/%Y").date()
+
+	if timezone.now().date() > dt_scadenza:
+		context = {'scadenza': settings.DATA_SCADENZA}
+		return render(request, 'preform_fine.html', context)
+
+	if request.method == 'GET':
+		form = CrispyPreForm()
+	else:
+		form = CrispyPreForm(request.POST)
+		if form.is_valid():
+			recaptcha_response = request.POST.get('g-recaptcha-response')
+			print(recaptcha_response)			
+			data = {
+                'secret': settings.RECAPTCHA_PRIVATE_KEY,
+                'response': recaptcha_response
+            }
+			r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+			result = r.json()
+			print(result)
+			''' End reCAPTCHA validation '''
+
+			if result['success']:
+				preform = form.save(commit=False)
+				preform.data_ingresso = timezone.now()
+				preform.save()
+				send_link_form(preform.pk)
+				# visualizza messaggio di conferma all'utente
+				return render(request, 'response.html')
+			else:
+				messages.error(request, 'reCAPTCHA non valido. Ritentare.')
 
 	context = {'form': form}
 	return render(request, 'preform.html', context)
@@ -100,7 +137,7 @@ def insert_domanda(request):
 				cognome_ric=''
 				nome_ric=''
 				dtnascita_ric=None
-				comunenascita_ric=''
+				comuneNascita_ric=''
 				indirizzo_ric=''
 
 				if anag_richiedente:
