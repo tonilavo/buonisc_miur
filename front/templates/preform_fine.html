@@ -1,0 +1,21 @@
+{% extends "baseBootstrap4.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+
+{% block content %}
+	{% block extra_js %}
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+		{% endblock extra_js %}
+		<div class="row">
+		<div class="panel-heading pagetitlehome titolopagina" style="padding-top:10px;padding-left: 105px;">
+			<p>Sono scaduti i termini per fare richiesta del contributo.</p>
+			L'ultimo giorno utile per fare richiesta era il {{ scadenza }}.
+		</div>
+	</div>
+
+
+  {% endblock  %}
