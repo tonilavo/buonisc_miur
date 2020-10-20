@@ -5,16 +5,13 @@
 <html lang="en">
 
 {% block content %}
-	{% block extra_js %}
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-		{% endblock extra_js %}
-		<div class="row">
-		<div class="panel-heading pagetitlehome titolopagina" style="padding-top:10px;padding-left: 105px;">
-			<p>Sono scaduti i termini per fare richiesta del contributo.</p>
-			L'ultimo giorno utile per fare richiesta era il {{ scadenza }}.
-		</div>
+		<div class="panel-heading pagetitlehome titolopagina" style="padding-top:80px;">
+<h3 class="d-flex justify-content-center">Sono scaduti i termini per fare richiesta del buono Miur.</h3>
+
+<br>
+<h3 class="d-flex justify-content-center">L'ultimo giorno utile per fare richiesta era il {{ scadenza }}.</h3>
+
 	</div>
 
 
