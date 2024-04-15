@@ -223,11 +223,8 @@ LOGIN_REDIRECT_URL= '/back/servizio'
 
 # dir per allegati
 if USE_ABSOLUTE_PATH == 'True':
-    MEDIA_URL = 'http://www.comune.grosseto.it/media/buonisc_miur/'
     MEDIA_URL = env('MEDIA_URL')
-    MEDIA_ROOT = '/home/django/djangotoni/produzione/progetti/dirstudioweb/media/buonisc_miur/'
     MEDIA_ROOT = env('MEDIA_ROOT')
-
 else:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
