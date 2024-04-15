@@ -236,4 +236,4 @@ SESSION_ENGINE='django.contrib.sessions.backends.file'
 
 DATA_SCADENZA = env('DATA_SCADENZA')
 
-APK_SERVICE='http://10.0.80.102:8080/api/apkanagrafica/'
+APK_SERVICE=env('APK_SERVICE')
