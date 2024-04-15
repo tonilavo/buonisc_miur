@@ -68,7 +68,6 @@ def preform_insert_captcha(request):
             }
 			r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
 			result = r.json()
-			print(result)
 			''' End reCAPTCHA validation '''
 
 			if result['success']:
@@ -376,7 +375,6 @@ class BasicUploadView(View):
 		if form.is_valid():
 			photo = form.save(commit=False)
 			photo.data_inserimento = timezone.now()
-			print("foto salvata per domanda num." + str(request.session['domanda_id']))
 			photo.domanda_num = request.session['domanda_id']
 			photo.save()
 			print("url:" + photo.file.url)
@@ -419,7 +417,6 @@ def upload_file(request, id):
 				rec_allegato['file'] = form.cleaned_data['file']
 				rec_allegato['descrizione'] = form.cleaned_data['descrizione']
 				Allegati.objects.create(**rec_allegato)
-
 				next_url = get_url_prefix() + '/upload/' + str(id) + '/'
 				if settings.DEBUG:
 					print("redirect to " + next_url)
@@ -430,9 +427,7 @@ def upload_file(request, id):
 			next_url = get_url_prefix() + '/clear_files/' + str(id) + '/'
 			if settings.DEBUG:
 				print("redirect to " + next_url)
-
 			return HttpResponseRedirect(next_url)
-
 	else:
 		form = PhotoForm()
 
@@ -465,58 +460,6 @@ def clear_database(request, id):
 
 def msgfinale(request, id):
 	return render(request, "testmessages.html", {'id': id})
-
-def domandatest(request):
-	cf_test = 'BRGLWG73S24I726A'
-
-	test_token = 'sd678766Gre$110Psss#ù'
-	rec_prec = Ingressi.objects.filter(codice_fiscale=cf_test, token=test_token)
-	if rec_prec.count() == 0:
-		rec_prec = Ingressi.objects.create( email="tonino.lavorati@gmail.com", tel = "3939202022",
-										    codice_fiscale=cf_test, token='BRGLWG73S24I726A', stato=0)
-		rec_prec.save()
-	request.session.flush()
-	request.session['token'] = test_token
-
-	testdomande_rec = Domande.objects.filter(pr_codfiscale='BRGRLA16S69E202I', token=test_token)
-	if settings.DEBUG:
-		print("trovati n."+str(testdomande_rec.count()) + " records")
-	if testdomande_rec.count()==0:
-		domanda_data = {}
-		domanda_data['token'] = test_token
-		domanda_data['pr_data_richiesta'] = timezone.now()
-		domanda_data['so_cognome'] = 'BARGAGLI'
-		domanda_data['so_nome'] = 'LUDWIG'
-		domanda_data['so_nasc_dt'] = datetime.datetime(1973, 11, 24)
-		domanda_data['so_nasc_com'] = 'SIENA'
-		domanda_data['so_flag_residente'] = 1
-		domanda_data['so_cod_fis'] = 'BRGLWG73S24I726A'
-		domanda_data['so_sesso'] = 'M'
-		domanda_data['so_email'] = rec_prec.email
-		domanda_data['so_tel'] = rec_prec.tel
-		domanda_data['pr_cognome'] = 'BARGAGLI'
-		domanda_data['pr_nome'] = 'ARIEL'
-		domanda_data['pr_sesso'] = 'F'
-		domanda_data['pr_nasc_dt'] = datetime.datetime(2016, 11, 29)
-		domanda_data['pr_nasc_com'] = 'GROSSETO'
-		domanda_data['pr_codfiscale'] = 'BRGRLA16S69E202I'
-		domanda_data['pr_fascia_asilo'] = 'M'
-		domanda_data['pr_spesa_mese'] = 250
-		domanda_data['pr_spesa_totale'] = 1250
-		domanda_data['pr_tipo_asilo'] = 'P'
-		domanda_data['so_risc_diretta'] = 'N'
-		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
-		domanda_data['so_risc_diretta'] = 'N'
-		domanda_data['so_banca_iban'] = 'IT76M0301503200000000218501'
-		domanda_data['pr_prot_isee_inps'] = 'INPS-ISEE-2020-'
-
-		domanda_data['pr_importo_tot_ricevute'] = 1400
-		rec = Domande.objects.create(**domanda_data)
-		domanda_num = rec.pk
-	else:
-		domanda_num = testdomande_rec[0].pk
-
-	return redirect(get_url_prefix() + '/update_domanda/' + str(domanda_num)+'/')
 
 def get_ana_apk(cod_fiscale):
     dati_anag = None
