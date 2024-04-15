@@ -62,7 +62,6 @@ def preform_insert_captcha(request):
 		form = CrispyPreForm(request.POST)
 		if form.is_valid():
 			recaptcha_response = request.POST.get('g-recaptcha-response')
-			print(recaptcha_response)			
 			data = {
                 'secret': settings.RECAPTCHA_PRIVATE_KEY,
                 'response': recaptcha_response
@@ -151,10 +150,7 @@ def insert_domanda(request):
 					sex_ric='F'
 				else:
 					sex_ric ='M'
-				#cf = codicefiscale.decode(cod_fiscale)
-				#luogo_nascita_ric=cf['birthplace']['name']
-				#dtnascita_ric =  cf ['birthdate']
-				#sex_ric = cf['sex']
+
 				cod_fiscale = rec.codfis_bimbo
 				anag_minore = get_ana_apk(cod_fiscale)
 				cognome_minore=''
